@@ -1,4 +1,5 @@
 import numpy as np
+from queue import Queue
 
 
 class MealyMachine:
@@ -19,9 +20,18 @@ class MealyMachine:
     def __str__(self):
         return f"Mealy Machine amount of states = {self.Q}, I = {self.input_signs}, O = {self.output_signs}"
 
-    def random_route(self, n=10):
-        w, v, q = "".join(np.random.choice(self.input_signs, n, replace=True)), "", 0
+    def route(self, w=10):
+        w = (
+            "".join(np.random.choice(self.input_signs, w, replace=True))
+            if isinstance(w, int)
+            else w
+        )
+        v, q = "", 0
         for a in w:
+            assert (q, a) in self.λ and (
+                q,
+                a,
+            ) in self.δ, "nie ma taiego przejścia w maszynie, potencjalnie zły alfabet!"
             v += self.λ[(q, a)]
             q = self.δ[(q, a)]
         return (w, v)
@@ -37,21 +47,45 @@ class MealyMachine:
                 )
                 print(f"({q},{a}) --> '{self.λ[(q,a)]}',{self.δ[(q,a)]}")
 
-    # TO DO: NIE WIEM JAK SPRAWDZAĆ RÓWNOWAŻNOŚĆ DWÓCH STANÓW (żęby sie nie zapętlać w ∞)
-    # def __eq__(self, other):
-    #     if not (
-    #         self.input_signs == other.input_signs
-    #         and self.output_signs == other.output_signs
-    #     ):
-    #         return 1  # nie zgadzaja sie alfabety wiec na pewno nie są równoważne
+    """
+    zwracane wartości:
+        1  -> różne alfabety obu maszyn 
+        "" -> maszyny równoważne 
+        s  -> słowo rozróżniające automaty 
+    """
 
-    #     def state_equivalance(q1, q2):
-    #         for a in self.input_signs:
-    #             if not (
-    #                 self.λ[(q1, a)] == other.λ[(q2, a)]
-    #                 and state_equivalance(self.δ[(q1, a)], other.δ[(q2, a)])
-    #             ):
-    #                 return False
-    #         return True
+    def equiv(self, other):
 
-    #     return state_equivalance(0, 0)
+        def BFS():
+            visited = dict()
+            Q = Queue()
+
+            def addToQueue(state, w):
+                if not (state, w[-1]) in visited:
+                    visited[(state, w[-1])] = True
+                    Q.put((state, w))
+
+            addToQueue((0, 0), "0")
+            while not Q.empty():
+                item = Q.get()
+                q1, q2, w = item[0][0], item[0][1], item[1]
+                for a in self.input_signs:
+                    l1, l2 = self.λ[(q1, a)], other.λ[(q2, a)]
+                    if l1 != l2:
+                        return w + a
+                    else:
+                        addToQueue((self.δ[(q1, a)], other.δ[(q2, a)]), w + a)
+            return ""
+
+        if not (
+            self.input_signs == other.input_signs
+            and self.output_signs == other.output_signs
+        ):
+            assert (
+                False
+            ), "automaty pracują na różnych alfabetach - nie moga być równoważne!"
+
+        counterexample = BFS()
+        if counterexample == "":
+            return True
+        return counterexample[1:]
