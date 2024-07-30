@@ -87,5 +87,5 @@ class MealyMachine:
 
         counterexample = BFS()
         if counterexample == "":
-            return True
-        return counterexample[1:]
+            return (True, "")
+        return (False, counterexample[1:])
