@@ -16,7 +16,6 @@ class InferringMM:
         self.cnt = [0, 0]
 
     def run(self):
-        debug_k = 0
         # 1 krok inicljalizacja
         self._extend_E(self.input_signs)
         self._extend_S("")
@@ -91,8 +90,6 @@ class InferringMM:
         return conjecture
 
     def _process_counterexample(self, w):
-
-        # DO POPRAWY !!! znajdowanie maxsymalnego prefiksu który jest prefiksem
         states = set(self.S)
         max_pref = ""
         idx = -1
