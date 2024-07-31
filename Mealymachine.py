@@ -6,8 +6,8 @@ class MealyMachine:
     """konwencja:
     Q                   - liczba stanów maszyny,
     input, output_signs - alfabet wejściowy/wyjściowy jako lista?
-    λ                   - funkcja (q,a) -> a (jaką literke wypisać przy danym przejściu), jako słownik
-    δ                   - funkcja (q,a) -> q'(funkcja przejścia automatu), jako słownik
+    λ                   - funkcja (q,a) -> a (jaką literke wypisać przy danym przejściu), słownik
+    δ                   - funkcja (q,a) -> q'(funkcja przejścia automatu), słownik
     """
 
     def __init__(self, Q=0, input_signs=None, output_signs=None, λ=dict(), δ=dict()):
