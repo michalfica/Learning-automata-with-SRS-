@@ -20,44 +20,21 @@ class InferringMM:
         # 1 krok inicljalizacja
         self._extend_E(self.input_signs)
         self._extend_S("")
-
-        print(f"poczatkowo tabela obserwacji:")
-        print(f"S : {self.S}")
-        print(f"E : {self.E}")
-        print(f"T :")
-        for key, value in self.T.items():
-            print(f"key={key}, value={value}")
         # 2 krok:
         while True:
             debug_k += 1
-            print("sprawdzam czy zamnkieta")
             check, x = self._closed()
             while check == False:
-                print(f"nie jest zamknieta - {x}")
                 self._extend_S(x)
                 check, x = self._closed()
-            print(f"S : {self.S}")
-            print(f"E : {self.E}")
 
-            print(f"tworze hipoteze")
             conjecture = self._create_conjecture()
-            conjecture.print_transitions()
             check, x = self._query_type2(conjecture)
 
             if check == False:
-                print(f"nie jest dobra - {x}")
                 self._process_counterexample(x)
-                print(f"tabela obserwacji, po zobaczeniu kontrprzykładu:")
-                print(f"S : {self.S}")
-                print(f"E : {self.E}")
-                print(f"T :")
-                for key, value in self.T.items():
-                    print(f"key={key}, value={value}")
             else:
                 return (conjecture, self.cnt)
-            print("\n\n")
-            # if debug_k >= 3:
-            #     return (MealyMachine(), [0, 0])
 
     def _E_realtion(self, s, t):
         for e in self.E:
@@ -117,8 +94,6 @@ class InferringMM:
 
         # DO POPRAWY !!! znajdowanie maxsymalnego prefiksu który jest prefiksem
         states = set(self.S)
-        print(f"states = {states}, w = {w}")
-
         max_pref = ""
         idx = -1
         for a in w:
@@ -127,8 +102,6 @@ class InferringMM:
                 idx += 1
             else:
                 break
-
-        print(f"max_prefiks = {max_pref}, zaczyna sie w {idx}")
         w = w[::-1]
         if idx != -1:
             w = w[: -(idx + 1)]
@@ -137,5 +110,4 @@ class InferringMM:
         for a in w:
             suffix = a + suffix
             suffixes.append(suffix)
-        print(f"ddodaje do E {suffixes} po popatrzeniu na kontrprzykład")
         self._extend_E(suffixes)
