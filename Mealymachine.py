@@ -1,5 +1,8 @@
 import numpy as np
+from numpy import random
 from queue import Queue
+
+from string import ascii_lowercase as alc
 
 
 class MealyMachine:
@@ -12,13 +15,34 @@ class MealyMachine:
 
     def __init__(self, Q=0, input_signs=None, output_signs=None, λ=dict(), δ=dict()):
         self.Q = Q
-        self.input_signs = sorted(input_signs)  # sortowanie by móc porównywac
-        self.output_signs = sorted(output_signs)
+        # sortowanie by móc porównywac
+        self.input_signs = sorted(input_signs) if input_signs is not None else None
+        self.output_signs = sorted(output_signs) if output_signs is not None else None
         self.λ = λ
         self.δ = δ
 
     def __str__(self):
         return f"Mealy Machine amount of states = {self.Q}, I = {self.input_signs}, O = {self.output_signs}"
+
+    def random_machine(self):
+        self.Q = random.randint(low=1, high=10)
+        insz, outsz = (
+            random.randint(low=1, high=8, size=1)[0],
+            random.randint(low=1, high=8, size=1)[0],
+        )
+        self.input_signs = alc[:insz]
+        self.output_signs = alc[:outsz]
+
+        for q in range(self.Q):
+            for a in self.input_signs:
+                x = self.output_signs[random.randint(low=0, high=outsz)]
+                self.λ[(q, a)] = x
+
+        for q in range(self.Q):
+            for a in self.input_signs:
+                print(f"q = {q}, a = {a}, self.Q = {self.Q}")
+                nxt_q = random.randint(low=0, high=self.Q)
+                self.δ[(q, a)] = nxt_q
 
     def route(self, w=10):
         w = (
