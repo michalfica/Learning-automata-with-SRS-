@@ -21,7 +21,6 @@ class InferringMM:
         self._extend_S("")
         # 2 krok:
         while True:
-            debug_k += 1
             check, x = self._closed()
             while check == False:
                 self._extend_S(x)
