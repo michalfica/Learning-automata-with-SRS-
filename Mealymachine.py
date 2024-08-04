@@ -24,14 +24,43 @@ class MealyMachine:
     def __str__(self):
         return f"Mealy Machine amount of states = {self.Q}, I = {self.input_signs}, O = {self.output_signs}"
 
+    def print_transitions(self):
+        for q in range(self.Q):
+            for a in self.input_signs:
+                assert (q, a) in self.λ and (
+                    q,
+                    a,
+                ) in self.δ, (
+                    "nie ma taiego przejścia w maszynie, potencjalnie zły alfabet!"
+                )
+                print(f"({q},{a}) --> '{self.λ[(q,a)]}',{self.δ[(q,a)]}")
+
+    def fully_conected(self):
+        visited = [False] * self.Q
+
+        def dfs(q):
+            visited[q] = True
+            for a in self.input_signs:
+                q_nxt = self.δ[(q, a)]
+                if not visited[q_nxt]:
+                    dfs(q_nxt)
+
+        for q in range(self.Q):
+            visited[q] = False
+        dfs(0)
+        for q in range(self.Q):
+            if not visited[q]:
+                return False
+        return True
+
     def random_machine(self):
         self.Q = random.randint(low=1, high=10)
         insz, outsz = (
             random.randint(low=1, high=8, size=1)[0],
             random.randint(low=1, high=8, size=1)[0],
         )
-        self.input_signs = alc[:insz]
-        self.output_signs = alc[:outsz]
+        self.input_signs = [a for i, a in enumerate(alc) if i < insz]
+        self.output_signs = [a for i, a in enumerate(alc) if i < outsz]
 
         for q in range(self.Q):
             for a in self.input_signs:
@@ -40,7 +69,6 @@ class MealyMachine:
 
         for q in range(self.Q):
             for a in self.input_signs:
-                print(f"q = {q}, a = {a}, self.Q = {self.Q}")
                 nxt_q = random.randint(low=0, high=self.Q)
                 self.δ[(q, a)] = nxt_q
 
@@ -59,17 +87,6 @@ class MealyMachine:
             v += self.λ[(q, a)]
             q = self.δ[(q, a)]
         return (w, v)
-
-    def print_transitions(self):
-        for q in range(self.Q):
-            for a in self.input_signs:
-                assert (q, a) in self.λ and (
-                    q,
-                    a,
-                ) in self.δ, (
-                    "nie ma taiego przejścia w maszynie, potencjalnie zły alfabet!"
-                )
-                print(f"({q},{a}) --> '{self.λ[(q,a)]}',{self.δ[(q,a)]}")
 
     """
     zwracane wartości:

@@ -14,8 +14,9 @@ class InferringMM:
         self.E = set()
         self.T = dict()
         self.cnt = [0, 0]
+        self.counterexamples = []
 
-    def run(self):
+    def run(self, counterexamples=False):
         # 1 krok inicljalizacja
         self._extend_E(self.input_signs)
         self._extend_S("")
@@ -30,9 +31,17 @@ class InferringMM:
             check, x = self._query_type2(conjecture)
 
             if check == False:
+                self.counterexamples.append(x)
                 self._process_counterexample(x)
             else:
-                return (conjecture, self.cnt)
+                if counterexamples:
+                    return (
+                        conjecture,
+                        self.cnt,
+                        [len(x) for x in self.counterexamples],
+                    )
+                else:
+                    return (conjecture, self.cnt)
 
     def _E_realtion(self, s, t):
         for e in self.E:
