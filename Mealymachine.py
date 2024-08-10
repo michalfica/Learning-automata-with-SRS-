@@ -53,11 +53,11 @@ class MealyMachine:
                 return False
         return True
 
-    def random_machine(self):
-        self.Q = random.randint(low=1, high=10)
+    def random_machine(self, min_Q=2, max_Q=5, max_insz=5, max_outsz=5):
+        self.Q = random.randint(low=min_Q, high=max_Q)
         insz, outsz = (
-            random.randint(low=1, high=8, size=1)[0],
-            random.randint(low=1, high=8, size=1)[0],
+            random.randint(low=1, high=max_insz, size=1)[0],
+            random.randint(low=1, high=max_outsz, size=1)[0],
         )
         self.input_signs = [a for i, a in enumerate(alc) if i < insz]
         self.output_signs = [a for i, a in enumerate(alc) if i < outsz]
