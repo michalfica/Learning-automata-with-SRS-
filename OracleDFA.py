@@ -7,7 +7,7 @@ class OracleDFA:
 
     NO_ANSWER = ""
 
-    def init(self, Q, alphabet=[], δ=dict(), F=set()):
+    def __init__(self, Q, alphabet=[], δ=dict(), F=set()):
         self.Q = Q
         self.alphabet = alphabet
         self.δ = δ
@@ -17,15 +17,17 @@ class OracleDFA:
         return f"DFA amount of states = {self.Q}, transitions = {self.δ}, accept states = {self.F}"
 
     def route(self, w):
-        q, v = "", 0
+        q, v = 0, ""
         for i in range(2 * len(w)):
             if i % 2 == 0:
+                # print(f"czytam {w[i//2]}, jestem w {q} ide do {self.δ[(q, w[i // 2])]}")
                 q = self.δ[(q, w[i // 2])]
             else:
                 for a in self.alphabet:
                     if (q, a) in self.δ:
                         v += a
                         q = self.δ[(q, a)]
+        # print(f"na koniec jestem w {q}, utworzyłem v = {v}")
         if q in self.F:
             return v
         else:

@@ -49,7 +49,7 @@ class InferringMM:
                 else:
                     return (conjecture, self.cnt)
 
-    def _ask_oralce(self, w):
+    def _ask_oracle(self, w):
         return self.oracle.route(w)
 
     def _E_realtion(self, s, t):
@@ -60,8 +60,10 @@ class InferringMM:
 
     def _query_type1(self, w):
         if self.oracle is not None:
+            print("ucze sie z wyrocznia :) !!! hahaha")
             ans = self._ask_oracle(w)
             if ans != self.NO_ANSWER:
+                print(f"wyocznia mi powiedziała za darmo :)) ")
                 return ans
 
         self.cnt[0] += 1
