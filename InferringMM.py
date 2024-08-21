@@ -1,13 +1,19 @@
 from importlib import reload
 import Mealymachine
+import OracleDFA
 
 reload(Mealymachine)
+reload(OracleDFA)
 from Mealymachine import MealyMachine
+from OracleDFA import OracleDFA
 
 
 class InferringMM:
-    def __init__(self, target_mm):
+    NO_ANSWER = ""
+
+    def __init__(self, target_mm, oracle=None):
         self.target_mm = target_mm
+        self.oracle = oracle  # DFA (for now)
         self.input_signs = self.target_mm.input_signs
         self.output_signs = self.target_mm.output_signs
         self.S = set()
@@ -43,6 +49,9 @@ class InferringMM:
                 else:
                     return (conjecture, self.cnt)
 
+    def _ask_oralce(self, w):
+        return self.oracle.route(w)
+
     def _E_realtion(self, s, t):
         for e in self.E:
             if self.T[(s, e)] != self.T[(t, e)]:
@@ -50,6 +59,11 @@ class InferringMM:
         return True
 
     def _query_type1(self, w):
+        if self.oracle is not None:
+            ans = self._ask_oracle(w)
+            if ans != self.NO_ANSWER:
+                return ans
+
         self.cnt[0] += 1
         return self.target_mm.route(w)[1]
 
