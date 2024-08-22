@@ -60,10 +60,10 @@ class InferringMM:
 
     def _query_type1(self, w):
         if self.oracle is not None:
-            print("ucze sie z wyrocznia :) !!! hahaha")
+            print(f"ucze sie z wyrocznia :) !!! hahaha, pytam sie o {w}")
             ans = self._ask_oracle(w)
             if ans != self.NO_ANSWER:
-                print(f"wyocznia mi powiedziała za darmo :)) ")
+                print(f"wyocznia mi powiedziała za darmo :)) ans =  {ans} ")
                 return ans
 
         self.cnt[0] += 1
