@@ -25,18 +25,14 @@ class InferringMM:
     def run(self, counterexamples=False):
         # 1 krok inicljalizacja
         self._extend_E(self.input_signs)
-        print(f"inicjalizacja E = {self.E}")
-
         for e in self.E:
             self.T[("", e)] = self._query_type1("" + e)[-len(e) :]
         self._extend_S("")
-        print(f"inicjalizacja S = {self.S}")
-
         # 2 krok:
         while True:
             check, x = self._closed()
             while check == False:
-                print(f"tabelka nie jest zamknieta! x = {x}")
+                # print(f"tabelka nie jest zamknieta! x = {x}")
                 self._extend_S(x)
                 check, x = self._closed()
 
@@ -68,10 +64,10 @@ class InferringMM:
     def _query_type1(self, w):
         # print(f"pytam o : {w}")
         if self.oracle is not None:
-            print(f"ucze sie z wyrocznia :) !!! hahaha, pytam sie o {w}")
+            # print(f"ucze sie z wyrocznia :) !!! hahaha, pytam sie o {w}")
             ans = self._ask_oracle(w)
             if ans != self.NO_ANSWER:
-                print(f"wyocznia mi powiedziała za darmo :)) ans =  {ans} ")
+                # print(f"wyocznia mi powiedziała za darmo :)) ans =  {ans} ")
                 return ans
 
         self.cnt[0] += 1
