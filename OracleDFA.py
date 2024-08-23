@@ -20,14 +20,12 @@ class OracleDFA:
         q, v = 0, ""
         for i in range(2 * len(w)):
             if i % 2 == 0:
-                # print(f"czytam {w[i//2]}, jestem w {q} ide do {self.δ[(q, w[i // 2])]}")
                 q = self.δ[(q, w[i // 2])]
             else:
                 for a in self.alphabet:
                     if (q, a) in self.δ:
                         v += a
                         q = self.δ[(q, a)]
-        # print(f"na koniec jestem w {q}, utworzyłem v = {v}")
         if q in self.F:
             return v
         else:
