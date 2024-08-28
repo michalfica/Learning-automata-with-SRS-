@@ -27,13 +27,14 @@ class MealyMachine:
     def print_transitions(self):
         for q in range(self.Q):
             for a in self.input_signs:
-                assert (q, a) in self.λ and (
-                    q,
-                    a,
-                ) in self.δ, (
-                    "nie ma taiego przejścia w maszynie, potencjalnie zły alfabet!"
-                )
-                print(f"({q},{a}) --> '{self.λ[(q,a)]}',{self.δ[(q,a)]}")
+                # assert (q, a) in self.λ and (
+                #     q,
+                #     a,
+                # ) in self.δ, (
+                #     "nie ma taiego przejścia w maszynie, potencjalnie zły alfabet!"
+                # )
+                # print(f"({q},{a}) --> '{self.λ[(q,a)]}',{self.δ[(q,a)]}")
+                print(f"({q},{a}) --> '?',{self.δ[(q,a)]}")
 
     def fully_conected(self):
         visited = [False] * self.Q
