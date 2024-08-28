@@ -1,11 +1,11 @@
 from importlib import reload
-import Mealymachine
-import OracleDFA
+import utils.Mealymachine as Mealymachine
+import utils.OracleDFA as OracleDFA
 
 reload(Mealymachine)
 reload(OracleDFA)
-from Mealymachine import MealyMachine
-from OracleDFA import OracleDFA
+from utils.Mealymachine import MealyMachine
+from utils.OracleDFA import OracleDFA
 
 
 class InferringMM:
