@@ -59,4 +59,15 @@ class PaternMM(MealyMachine):
                 self.δ[(self.state_mapping[x], a)] = find_new_state(x, a)
 
     def _compute_output_function(self):
-        pass
+        for i in range(self.Q):
+            for a in self.input_signs:
+                next_state = self.δ[(i, a)]
+                q = list(self.state_mapping.keys())[
+                    list(self.state_mapping.values()).index(next_state)
+                ]
+                znaczek = "0"
+                for j in range(self.n):
+                    if len(self.patterns[j]) == q[j]:
+                        znaczek = "1"
+                # print(f"q = {q}, patterms = {self.patterns}, znaczek = {znaczek}")
+                self.λ[(i, a)] = znaczek
