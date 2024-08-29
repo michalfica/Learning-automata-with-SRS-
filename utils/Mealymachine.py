@@ -27,14 +27,14 @@ class MealyMachine:
     def print_transitions(self):
         for q in range(self.Q):
             for a in self.input_signs:
-                # assert (q, a) in self.λ and (
-                #     q,
-                #     a,
-                # ) in self.δ, (
-                #     "nie ma taiego przejścia w maszynie, potencjalnie zły alfabet!"
-                # )
-                # print(f"({q},{a}) --> '{self.λ[(q,a)]}',{self.δ[(q,a)]}")
-                print(f"({q},{a}) --> '?',{self.δ[(q,a)]}")
+                assert (q, a) in self.λ and (
+                    q,
+                    a,
+                ) in self.δ, (
+                    "nie ma taiego przejścia w maszynie, potencjalnie zły alfabet!"
+                )
+                print(f"({q},{a}) --> '{self.λ[(q,a)]}',{self.δ[(q,a)]}")
+                # print(f"({q},{a}) --> '?',{self.δ[(q,a)]}")
 
     def fully_conected(self):
         visited = [False] * self.Q
@@ -111,6 +111,8 @@ class MealyMachine:
             while not Q.empty():
                 item = Q.get()
                 q1, q2, w = item[0][0], item[0][1], item[1]
+                # if other.Q == 1:
+                print(f"q1={q1}, q2={q2}, w ={w}")
                 for a in self.input_signs:
                     l1, l2 = self.λ[(q1, a)], other.λ[(q2, a)]
                     if l1 != l2:
@@ -127,6 +129,7 @@ class MealyMachine:
                 False
             ), "automaty pracują na różnych alfabetach - nie moga być równoważne!"
 
+        print(f"zaczyna przeszukiwanie BFS zeby znalezc kontrprzyklad !")
         counterexample = BFS()
         if counterexample == "":
             return (True, "")
