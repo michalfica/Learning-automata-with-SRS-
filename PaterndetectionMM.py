@@ -4,10 +4,15 @@ from itertools import product
 
 class PaternMM(MealyMachine):
     def __init__(self, patterns, insigns, outsigns):
-        n = 1
-        for x in patterns:
-            n *= len(x) + 1
-        super().__init__(Q=n, input_signs=insigns, output_signs=outsigns)
+        def compute_number_of_states():
+            k = 1
+            for x in patterns:
+                k *= len(x) + 1
+            return k
+
+        super().__init__(
+            Q=compute_number_of_states(), input_signs=insigns, output_signs=outsigns
+        )
         self.patterns = patterns
         self.n = len(self.patterns)
         self.state_mapping = dict()
@@ -31,27 +36,27 @@ class PaternMM(MealyMachine):
             return self.state_mapping[tuple(state)]
 
         xs = [range(len(x) + 1) for x in self.patterns]
+
         match len(self.patterns):
             case 1:
-                cnt = 0
-                for x in product(xs[0]):
-                    self.state_mapping[x] = cnt
-                    cnt += 1
-                for x in product(xs[0]):
-                    for a in self.input_signs:
-                        self.δ[(self.state_mapping[x], a)] = find_new_state(x, a)
-            # case 2:
-            #     for x in product(xs[0], xs[1]):
-            #         for a in self.input_signs:
-            #             self.δ[(cnt, a)] = find_new_state(x, a)
-            #             cnt += 1
-            # case 3:
-            #     for x in product(xs[0], xs[1], xs[2]):
-            #         for a in self.input_signs:
-            #             self.δ[(cnt, a)] = find_new_state(x, a)
-            #             cnt += 1
+                nested_loop1, nested_loop2 = product(xs[0]), product(xs[0])
+            case 2:
+                nested_loop1, nested_loop2 = product(xs[0], xs[1]), product(
+                    xs[0], xs[1]
+                )
+            case 3:
+                nested_loop1, nested_loop2 = product(xs[0], xs[1], xs[2]), product(
+                    xs[0], xs[1], xs[2]
+                )
             case _:
-                print("PROBLEM!")
+                print("too much patterns, maximum possible number is only 3!")
+        cnt = 0
+        for x in nested_loop1:
+            self.state_mapping[x] = cnt
+            cnt += 1
+        for x in nested_loop2:
+            for a in self.input_signs:
+                self.δ[(self.state_mapping[x], a)] = find_new_state(x, a)
 
     def _compute_output_function(self):
         pass
