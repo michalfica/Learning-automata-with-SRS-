@@ -37,7 +37,7 @@ class PaternMM(MealyMachine):
 
         xs = [range(len(x) + 1) for x in self.patterns]
 
-        match len(self.patterns):
+        match self.n:
             case 1:
                 nested_loop1, nested_loop2 = product(xs[0]), product(xs[0])
             case 2:
