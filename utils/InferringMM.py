@@ -29,9 +29,6 @@ class InferringMM:
         for e in self.E:
             self.T[("", e)] = self._query_type1("" + e)[-len(e) :]
         self._extend_S("")
-        if self.debug:
-            print(f"inicjalizacja done")
-
         # 2 krok:
         while True:
             check, x = self._closed()
@@ -42,11 +39,7 @@ class InferringMM:
                 check, x = self._closed()
 
             conjecture = self._create_conjecture()
-            if self.debug:
-                print(f"stworzyłem hipoteze = {conjecture}")
             check, x = self._query_type2(conjecture)
-            if self.debug:
-                print(f"hipoteza jest : {check}, kontrprzykład = {x}")
 
             if check == False:
                 self.counterexamples.append(x)
@@ -71,8 +64,6 @@ class InferringMM:
         return True
 
     def _query_type1(self, w):
-        # if self.debug:
-        #     print(f"pytam o : {w}")
         if self.oracle is not None:
             ans = self._ask_oracle(w)
             if ans != self.NO_ANSWER:
@@ -83,10 +74,6 @@ class InferringMM:
 
     def _query_type2(self, conjecture):
         self.cnt[1] += 1
-        if self.debug:
-            print(
-                f"sprawdzam hipoteze {conjecture} czy jest równoważna? {self.target_mm}"
-            )
         return self.target_mm.equiv(conjecture)
 
     def _closed(self):
