@@ -27,6 +27,6 @@ class OracleDFA:
                         v += a
                         q = self.δ[(q, a)]
         if q in self.F:
-            return v
+            return (w, v)
         else:
-            return self.NO_ANSWER
+            return (w, self.NO_ANSWER)

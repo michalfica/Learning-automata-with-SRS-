@@ -55,7 +55,7 @@ class InferringMM:
                     return (conjecture, self.cnt)
 
     def _ask_oracle(self, w):
-        return self.oracle.route(w)
+        return self.oracle.route(w)[1]
 
     def _E_realtion(self, s, t):
         for e in self.E:
@@ -66,7 +66,7 @@ class InferringMM:
     def _query_type1(self, w):
         if self.oracle is not None:
             ans = self._ask_oracle(w)
-            if ans != self.NO_ANSWER:
+            if ans != self.NO_ANSWER and ans == self.target_mm.route(w)[1]:
                 return ans
 
         self.cnt[0] += 1
