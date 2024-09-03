@@ -7,6 +7,8 @@ reload(OracleDFA)
 from utils.Mealymachine import MealyMachine
 from utils.OracleDFA import OracleDFA
 
+import copy
+
 
 class InferringMM:
     NO_ANSWER = ""
@@ -23,12 +25,28 @@ class InferringMM:
         self.counterexamples = []
         self.debug = debug
 
+        # self.debug_counter = dict()
+
+    # def increment_debug_counter(self, k, v=1):
+    #     if k not in self.debug_counter:
+    #         self.debug_counter[k] = 1
+    #     else:
+    #         self.debug_counter[k] += v
+
     def run(self, counterexamples=False):
+        if self.debug and self.oracle is not None:
+            print(f"oracle to: ")
+            self.oracle.print_transitions()
         # 1 krok inicljalizacja
         self._extend_E(self.input_signs)
         for e in self.E:
             self.T[("", e)] = self._query_type1("" + e)[-len(e) :]
+            # self.increment_debug_counter("")
         self._extend_S("")
+
+        if self.debug:
+            print(f"po inicjalizacji S = {self.S}, E = {self.E}")
+
         # 2 krok:
         while True:
             check, x = self._closed()
@@ -38,12 +56,19 @@ class InferringMM:
                 self._extend_S(x)
                 check, x = self._closed()
 
+            if self.debug:
+                print(f"tabelka zamknieta S = {self.S}, E = {self.E}")
+
             conjecture = self._create_conjecture()
             check, x = self._query_type2(conjecture)
 
             if check == False:
+                if self.debug:
+                    print(f"kontrprzykład = {x}")
                 self.counterexamples.append(x)
                 self._process_counterexample(x)
+                if self.debug:
+                    print(f"po przetworzeni kontrprzykładu S = {self.S}, E = {self.E}")
             else:
                 if counterexamples:
                     return (
@@ -64,12 +89,19 @@ class InferringMM:
         return True
 
     def _query_type1(self, w):
+        # if self.debug:
+        #     print(f"pytam sie o {w}")
         if self.oracle is not None:
             ans = self._ask_oracle(w)
+
             if ans != self.NO_ANSWER and ans == self.target_mm.route(w)[1]:
+                # if self.debug:
+                # print(f"ans = {ans}")
                 return ans
 
         self.cnt[0] += 1
+        # if self.debug:
+        #     print(f"KOSZTOWNE ZAPYTANIE!")
         return self.target_mm.route(w)[1]
 
     def _query_type2(self, conjecture):
@@ -93,13 +125,24 @@ class InferringMM:
         for a in self.input_signs:
             for e in self.E:
                 self.T[(s + a, e)] = self._query_type1(s + a + e)[-len(e) :]
+                # self.increment_debug_counter(s + a)
 
     def _extend_E(self, elist):
-        self.E.update(elist)
+        if self.debug:
+            print(f"powiększam rozróżniająće E o {elist}")
         for s in self.S:
-            for a in [""] + self.input_signs:
+
+            for e in elist:
+                if e not in self.E:
+                    self.T[(s, e)] = self._query_type1(s + e)[-len(e) :]
+                    # self.increment_debug_counter(s)
+
+            for a in self.input_signs:
                 for e in elist:
-                    self.T[(s + a, e)] = self._query_type1(s + a + e)[-len(e) :]
+                    if e not in self.E and s + a not in self.S:
+                        self.T[(s + a, e)] = self._query_type1(s + a + e)[-len(e) :]
+                        # self.increment_debug_counter(s + a)
+        self.E.update(elist)
 
     def _create_conjecture(self):
         def _equivalent_in_S(s):
@@ -117,18 +160,20 @@ class InferringMM:
         return conjecture
 
     def _process_counterexample(self, w):
-        states = set(self.S)
-        max_pref = ""
-        idx = -1
+        states = copy.deepcopy(self.S)
+        max_pref, idx = "", -1
         for a in w:
             if max_pref + a in states:
                 max_pref += a
                 idx += 1
             else:
                 break
-        w = w[::-1]
-        if idx != -1:
-            w = w[: -(idx + 1)]
+
+        max_pref += w[idx + 1]  # dokładam jedną literkę
+        idx += 1
+
+        w = w[idx + 1 :]  # zostawiam sobie sufiks
+        w = w[::-1]  # odwracam go
 
         suffixes, suffix = [], ""
         for a in w:
