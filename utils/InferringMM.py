@@ -25,6 +25,8 @@ class InferringMM:
         self.counterexamples = []
         self.debug = debug
 
+        self.queries = dict()
+
     def run(self, counterexamples=False):
         if self.debug and self.oracle is not None:
             print(f"oracle to: ")
@@ -69,13 +71,18 @@ class InferringMM:
 
     def _query_type1(self, w):
         if self.oracle is not None:
-            ans = self._ask_oracle(w)
+
+            ans = self.queries[w] if w in self.queries else self._ask_oracle(w)
 
             if ans != self.NO_ANSWER and ans == self.target_mm.route(w)[1]:
+                self.queries[w] = ans
                 return ans
 
-        self.cnt[0] += 1
-        return self.target_mm.route(w)[1]
+        if w not in self.queries:
+            self.cnt[0] += 1
+            self.queries[w] = self.target_mm.route(w)[1]
+
+        return self.queries[w]
 
     def _query_type2(self, conjecture):
         self.cnt[1] += 1
