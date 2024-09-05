@@ -24,6 +24,9 @@ class MealyMachine:
     def __str__(self):
         return f"Mealy Machine amount of states = {self.Q}, I = {self.input_signs}, O = {self.output_signs}"
 
+    def print_states(self):
+        print(f"# stanów = {self.Q}")
+
     def print_transitions(self):
         for q in range(self.Q):
             for a in self.input_signs:
