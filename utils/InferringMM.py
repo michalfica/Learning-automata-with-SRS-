@@ -15,7 +15,7 @@ class InferringMM:
 
     def __init__(self, target_mm, oracle=None, debug=False):
         self.target_mm = target_mm
-        self.oracle = oracle  # DFA (for now)
+        self.oracle = oracle  # DFA or Mealy machine (for now)
         self.input_signs = self.target_mm.input_signs
         self.output_signs = self.target_mm.output_signs
         self.S = set()
@@ -28,9 +28,6 @@ class InferringMM:
         self.queries = dict()
 
     def run(self, counterexamples=False):
-        if self.debug and self.oracle is not None:
-            print(f"oracle to: ")
-            self.oracle.print_transitions()
         # 1 krok inicljalizacja
         self._extend_E(self.input_signs)
         for e in self.E:
@@ -39,10 +36,16 @@ class InferringMM:
 
         # 2 krok:
         while True:
+            if self.debug:
+                print(f"S = {self.S}, rozmiar E = {self.E}")
             check, x = self._closed()
             while check == False:
                 self._extend_S(x)
                 check, x = self._closed()
+
+            if self.debug:
+                print(f"zamkniętość sprawdzona")
+                print(f"S = {self.S}, rozmiar E = {self.E}")
 
             conjecture = self._create_conjecture()
             check, x = self._query_type2(conjecture)
