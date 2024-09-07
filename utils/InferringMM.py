@@ -44,8 +44,7 @@ class InferringMM:
                 check, x = self._closed()
 
             if self.debug:
-                print(f"zamkniętość sprawdzona")
-                print(f"S = {self.S}, rozmiar E = {self.E}")
+                print(f"zamkniętość sprawdzona - S = {self.S}, rozmiar E = {self.E}")
 
             conjecture = self._create_conjecture()
             check, x = self._query_type2(conjecture)
@@ -83,6 +82,8 @@ class InferringMM:
 
         if w not in self.queries:
             self.cnt[0] += 1
+            if self.debug and self.oracle is not None:
+                print(f"zapytanie o słowo {w}")
             self.queries[w] = self.target_mm.route(w)[1]
 
         return self.queries[w]
