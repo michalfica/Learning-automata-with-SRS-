@@ -37,14 +37,16 @@ class InferringMM:
         # 2 krok:
         while True:
             if self.debug:
-                print(f"S = {self.S}, rozmiar E = {self.E}")
+                print(f"S = {sorted(self.S)}, rozmiar E = {sorted(self.E)}")
             check, x = self._closed()
             while check == False:
                 self._extend_S(x)
                 check, x = self._closed()
 
             if self.debug:
-                print(f"zamkniętość sprawdzona - S = {self.S}, rozmiar E = {self.E}")
+                print(
+                    f"zamkniętość sprawdzona - S = {sorted(self.S)}, rozmiar E = {sorted(self.E)}"
+                )
 
             conjecture = self._create_conjecture()
 
