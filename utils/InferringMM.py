@@ -47,9 +47,16 @@ class InferringMM:
                 print(f"zamkniętość sprawdzona - S = {self.S}, rozmiar E = {self.E}")
 
             conjecture = self._create_conjecture()
+
+            if self.debug:
+                print(f"hipoteza: ")
+                conjecture.print_transitions()
+
             check, x = self._query_type2(conjecture)
 
             if check == False:
+                if self.debug:
+                    print(f"kontrprzyklad = {x}")
                 self.counterexamples.append(x)
                 self._process_counterexample(x)
             else:
