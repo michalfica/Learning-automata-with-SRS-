@@ -102,16 +102,32 @@ class InferringMM:
         return self.target_mm.equiv(conjecture)
 
     def _closed(self):
+        wlist = []
         for s in self.S:
             for a in self.input_signs:
-                check = False
-                for t in self.S:
-                    if self._E_realtion(s + a, t):
-                        check = True
-                        break
-                if not check:
-                    return (False, s + a)
-        return (True, "")
+                if s + a not in self.S:
+                    wlist.append(s + a)
+        wlist = sorted(wlist, key=len)
+
+        for w in wlist:
+            check = False
+            for t in self.S:
+                if self._E_realtion(w, t):
+                    check = True
+                    break
+            if not check:
+                return (False, w)
+
+        # for s in self.S:
+        #     for a in self.input_signs:
+        #         check = False
+        #         for t in self.S:
+        #             if self._E_realtion(s + a, t):
+        #                 check = True
+        #                 break
+        #         if not check:
+        #             return (False, s + a)
+        # return (True, "")
 
     def _extend_S(self, s):
         self.S.add(s)
