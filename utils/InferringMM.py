@@ -127,7 +127,7 @@ class InferringMM:
         #                 break
         #         if not check:
         #             return (False, s + a)
-        # return (True, "")
+        return (True, "")
 
     def _extend_S(self, s):
         self.S.add(s)
