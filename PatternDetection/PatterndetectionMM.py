@@ -57,7 +57,7 @@ class PatternMM(MealyMachine):
                     xs[0], xs[1], xs[2], xs[3], xs[4]
                 ), product(xs[0], xs[1], xs[2], xs[3], xs[4])
             case _:
-                print("too much patterns, maximum possible number is only 4!")
+                assert False, "too much patterns, maximum possible number is only 4!"
         cnt = 0
         for x in nested_loop1:
             self.state_mapping[x] = cnt
