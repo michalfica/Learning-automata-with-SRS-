@@ -7,17 +7,28 @@ class PatternSwap(MealyMachine):
     """
     patterns - list of pairs of patterns to swap
     n        - amount of pairs of pattens
+
+    The state in the machine is a n-element tuple, on the ith coordniate there is:
+        (*) 0 <= i < n   - length of max prefix of i-th pattern, ending on curently read word,
+        (*) n <= i < n+1 - the number of currently printed pattern            or 0          otherwise,
+        (*) i == n+1     - the number of the currently printed pattern letter or [whatever] otherwise.
+
+    Note on the 'language'/relation defined b PatternSwap machines:
+    patterns recognised in text by the machine are DISJOINT, swaps can not overlap.
     """
 
     def __init__(self, patterns, insigns, outsigns):
-        def compute_number_of_states():
-            k = np.prod([len(x) + 1 for x in patterns])
-            m = np.max([len(x) for x in patterns])
-            return k * (len(patterns) + 1) * m + 1
+        def compute_number_of_states(xs):
+            k = np.prod([len(x[0]) + 1 for x in xs])
+            m = np.max([len(x[1]) for x in xs])
+            return k * (len(xs) + 1) * m + 1
 
         super().__init__(
-            Q=compute_number_of_states(), input_signs=insigns, output_signs=outsigns
+            Q=compute_number_of_states(xs=patterns),
+            input_signs=insigns,
+            output_signs=outsigns,
         )
+
         self.patterns = patterns
         self.n = len(self.patterns)
         self.NO_PRINTNIG = 0
@@ -28,7 +39,7 @@ class PatternSwap(MealyMachine):
 
     def _compute_state_transitions(self):
         def find_new_state(x, a):
-            # print(f"stan: {x}, litera: {a}")
+            print(f"stan: {x}, litera: {a}")
             printing, letter = x[self.n], x[self.n + 1]
             if (
                 printing != self.NO_PRINTNIG
@@ -51,14 +62,16 @@ class PatternSwap(MealyMachine):
                 for s in suffixes:
                     if s in prefixes:
                         if s == self.patterns[i][0]:
-                            full_patterns.append(i)
+                            full_patterns.append(i + 1)
                         state.append(len(s) % (len(self.patterns[i][0]) + 1))
                         break
             assert (
                 len(full_patterns) <= 1
             ), "wykryto kilka wzorców naraz w jednym miejscu - niewiadomo co wypisać!"
+
+            print(f"full_patterns = {full_patterns}")
             if not (printing == self.NO_PRINTNIG or len(full_patterns) == 0):
-                # print(f"zwracam stan: ŚMIETNIK (konflikt przy wypisywaniu)")
+                print(f"zwracam stan: ŚMIETNIK (konflikt przy wypisywaniu)")
                 return self.state_mapping[self.garbage]
 
             if printing == self.NO_PRINTNIG:
@@ -68,7 +81,7 @@ class PatternSwap(MealyMachine):
             else:
                 state.extend([printing, letter + 1])
 
-            # print(f"zwracam stan: {state}")
+            print(f"zwracam stan: {state}")
             return self.state_mapping[tuple(state)]
 
         xs = [range(len(x[0]) + 1) for x in self.patterns]
@@ -83,13 +96,15 @@ class PatternSwap(MealyMachine):
             case _:
                 assert False, "too much patterns, maximum possible is only 1!"
 
-        # print(f"krotki reperzentujące stany:")
+        print(f"krotki reperzentujące stany:")
         cnt = 0
         for x in nested_loop1:
             self.state_mapping[x] = cnt
-            # print(x)
+            print(x)
             cnt += 1
         self.state_mapping[self.garbage] = cnt
+        cnt += 1
+        print(f"+ garbage , cnt = {cnt}")
         for a in self.input_signs:
             self.δ[(self.state_mapping[self.garbage], a)] = self.state_mapping[
                 self.garbage
@@ -100,21 +115,24 @@ class PatternSwap(MealyMachine):
                 self.δ[(self.state_mapping[x], a)] = find_new_state(x, a)
 
     def _compte_output_function(self):
+
+        print(f"#stanów to {self.Q}")
         for i in range(self.Q):
             for a in self.input_signs:
+                # print(f"obliczam lambda({i}, {a}) ")
                 q = list(self.state_mapping.keys())[
                     list(self.state_mapping.values()).index(i)
                 ]
                 if q == self.garbage:
                     self.λ[(i, a)] = "0"
-                    print(f"dodaje przejscie {i}, {a}")
-                    break
-                printing, letter = q[self.n], q[self.n + 1]
-                if printing == self.NO_PRINTNIG:
-                    letter = "0"
+                    # print(f"dodaje funkcje wyjśćiową {i}, {a}")
                 else:
-                    letter = self.patterns[printing - 1][1][letter]
-                self.λ[(i, a)] = letter
+                    printing, letter = q[self.n], q[self.n + 1]
+                    if printing == self.NO_PRINTNIG:
+                        letter = "0"
+                    else:
+                        letter = self.patterns[printing - 1][1][letter]
+                    self.λ[(i, a)] = letter
 
     def route(self, w=10):
         w = (
@@ -124,17 +142,17 @@ class PatternSwap(MealyMachine):
         )
         v, q = "", 0
 
-        print(f"v = {v}, w = {w}")
+        # print(f"v = {v}, w = {w}")
         for a in w:
-            print(f"czytam a = {a}")
+            # print(f"czytam a = {a}")
             assert (q, a) in self.λ and (
                 q,
                 a,
             ) in self.δ, "nie ma taiego przejścia w maszynie, potencjalnie zły alfabet!"
             v += self.λ[(q, a)]
             q = self.δ[(q, a)]
-            print(
-                f"q = {list(self.state_mapping.keys())[list(self.state_mapping.values()).index(q)]}, v = {v}"
-            )
+            # print(
+            #     f"q = {list(self.state_mapping.keys())[list(self.state_mapping.values()).index(q)]}, v = {v}"
+            # )
             assert q != self.state_mapping[self.garbage], "konflikt przy wypisywaniu !"
         return (w, v)
