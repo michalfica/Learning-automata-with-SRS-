@@ -73,9 +73,9 @@ class PatternMM(MealyMachine):
                 q = list(self.state_mapping.keys())[
                     list(self.state_mapping.values()).index(next_state)
                 ]
-                znaczek = "0"
+                letter = "0"
                 for j in range(self.n):
                     if len(self.patterns[j]) == q[j]:
-                        znaczek = "1"
-                # print(f"q = {q}, patterms = {self.patterns}, znaczek = {znaczek}")
-                self.λ[(i, a)] = znaczek
+                        letter = "1"
+                # print(f"q = {q}, patterms = {self.patterns}, letter = {letter}")
+                self.λ[(i, a)] = letter
