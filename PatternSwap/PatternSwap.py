@@ -35,7 +35,7 @@ class PatternSwap(MealyMachine):
                 printing = self.NO_PRINTNIG
 
             words = [self.patterns[i][0][: x[i]] + a for i in range(self.n)]
-            state = []
+            state, full_patterns = [], []
             for i in range(self.n):
                 # szukam max prefiksu słowa self.patterns[i][0], które jest sufiksem słowa words[i]
                 prefixes = set(
@@ -47,16 +47,18 @@ class PatternSwap(MealyMachine):
                 suffixes = [words[i][j:] for j in range(len(words[i]) + 1)]
                 for s in suffixes:
                     if s in prefixes:
+                        if s == self.patterns[i][0]:
+                            full_patterns.append(i)
                         state.append(len(s) % (len(self.patterns[i][0]) + 1))
                         break
+            assert (
+                full_patterns <= 1
+            ), "wykryto kilka wzorców naraz w jednym miejscu - niewiadomo co wypisać!"
+            assert (
+                printing == self.NO_PRINTNIG or len(full_patterns) == 0
+            ), "konflikt przy wypisywaniu!"
 
             if printing == self.NO_PRINTNIG:
-                full_patterns = [
-                    i for i in range(self.n) if s[i] == len(self.patterns[i][1])
-                ]
-                assert (
-                    full_patterns <= 1
-                ), "wykryto kilka wzorców naraz w jednym miejscu - niewiadomo co wypisać!"
                 if full_patterns:
                     printing = full_patterns[0]
                 state.extend([printing, 0])
