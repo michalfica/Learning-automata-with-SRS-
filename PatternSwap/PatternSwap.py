@@ -13,8 +13,8 @@ class PatternSwap(MealyMachine):
         (*) n <= i < n+1 - the number of currently printed pattern (NUMBERED FROM 1 TO N)    or 0          otherwise,
         (*) i == n+1     - the number of the currently printed pattern letter                or [whatever] otherwise.
 
-    Note on the 'language'/relation defined b PatternSwap machines:
-    patterns recognised in text by the machine are DISJOINT, swaps can not overlap, (printing next pattern-swap can take only place after previous printing will be finised)
+    Note on the 'language'/relation defined by PatternSwap machines:
+    patterns recognised in text by the machine are DISJOINT, swaps can not overlap, (printing next pattern-swap can take only place after previous printing is finised)
     """
 
     def __init__(self, patterns, insigns, outsigns, debug=False):
