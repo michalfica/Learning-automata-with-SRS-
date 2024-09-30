@@ -21,7 +21,7 @@ class PatternSwap(MealyMachine):
 
         def compute_number_of_states(xs):
             k = np.prod([len(x[0]) + 1 for x in xs])
-            m = max(1, np.max([len(x[1]) for x in xs]) - 1)
+            m = max(1, np.max([len(x[1]) for x in xs]))
             return k * (len(xs) + 1) * m
 
         super().__init__(
