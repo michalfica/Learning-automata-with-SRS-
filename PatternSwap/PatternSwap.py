@@ -8,7 +8,7 @@ class PatternSwap(MealyMachine):
     patterns - list of pairs of patterns to swap
     n        - amount of pairs of pattens
 
-    The state in the machine is a n-element tuple, on the ith coordniate there is:
+    The state in the machine is a (n+2)-element tuple, on the ith coordniate there is:
         (*) 0 <= i < n   - length of max prefix of i-th pattern, ending on curently read word,
         (*) n <= i < n+1 - the number of currently printed pattern (NUMBERED FROM 1 TO N)    or 0          otherwise,
         (*) i == n+1     - the number of the currently printed pattern letter                or [whatever] otherwise.
