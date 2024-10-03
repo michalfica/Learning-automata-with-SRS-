@@ -10,7 +10,7 @@ from utils.DFA import DFA
 import copy
 
 
-class InferringMM:
+class Inferring:
     NO_ANSWER = ""
 
     def __init__(self, target_mm, oracle=None, debug=False):
@@ -27,13 +27,15 @@ class InferringMM:
 
         self.queries = dict()
 
-    def run(self, counterexamples=False):
-        # 1 krok inicljalizacja
+    def initialization(self):
         self._extend_E(self.input_signs)
         for e in self.E:
             self.T[("", e)] = self._query_type1("" + e)[-len(e) :]
         self._extend_S("")
 
+    def run(self, counterexamples=False):
+        # 1 krok inicljalizacja
+        self.initialization()
         # 2 krok:
         while True:
             if self.debug:
