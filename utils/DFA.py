@@ -1,4 +1,4 @@
-class OracleDFA:
+class DFA:
     """konwencja:
     Q                   - liczba stanów maszyny,
     δ                   - funkcja (q,a) -> q'(funkcja przejścia automatu), słownik
