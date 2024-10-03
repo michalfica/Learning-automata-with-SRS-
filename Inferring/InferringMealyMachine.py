@@ -3,7 +3,7 @@ import sys
 # from importlib import reload
 sys.path.append("../")
 
-from utils.InferringMM import InferringMM
+from utils.Inferring import InferringMM
 
 
 class InferringMealyMachine(InferringMM):
