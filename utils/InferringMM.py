@@ -1,11 +1,11 @@
 from importlib import reload
 import utils.Mealymachine as Mealymachine
-import utils.OracleDFA as OracleDFA
+import utils.DFA as DFA
 
 reload(Mealymachine)
-reload(OracleDFA)
+reload(DFA)
 from utils.Mealymachine import MealyMachine
-from utils.OracleDFA import OracleDFA
+from utils.DFA import DFA
 
 import copy
 
