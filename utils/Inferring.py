@@ -29,15 +29,10 @@ class Inferring:
 
     def _initialization(self):
         pass
-        # self._extend_E(self.input_signs)
-        # for e in self.E:
-        #     self.T[("", e)] = self._query_type1("" + e)[-len(e) :]
-        # self._extend_S("")
 
     def run(self, counterexamples=False):
-        # 1 krok inicljalizacja
         self._initialization()
-        # 2 krok:
+
         while True:
             if self.debug:
                 print(f"S = {sorted(self.S)}, rozmiar E = {sorted(self.E)}")
@@ -84,21 +79,7 @@ class Inferring:
         return True
 
     def _query_type1(self, w):
-        if self.oracle is not None:
-
-            ans = self.queries[w] if w in self.queries else self._ask_oracle(w)
-
-            if ans != self.NO_ANSWER and ans == self.target_mm.route(w)[1]:
-                self.queries[w] = ans
-                return ans
-
-        if w not in self.queries:
-            self.cnt[0] += 1
-            if self.debug and self.oracle is not None:
-                print(f"zapytanie o słowo {w}")
-            self.queries[w] = self.target_mm.route(w)[1]
-
-        return self.queries[w]
+        pass
 
     def _query_type2(self, conjecture):
         self.cnt[1] += 1
@@ -120,16 +101,6 @@ class Inferring:
                     break
             if not check:
                 return (False, w)
-
-        # for s in self.S:
-        #     for a in self.input_signs:
-        #         check = False
-        #         for t in self.S:
-        #             if self._E_realtion(s + a, t):
-        #                 check = True
-        #                 break
-        #         if not check:
-        #             return (False, s + a)
         return (True, "")
 
     def _extend_S(self, s):
@@ -153,19 +124,6 @@ class Inferring:
 
     def _create_conjecture(self):
         pass
-        # def _equivalent_in_S(s):
-        #     for i, t in enumerate(self.S):
-        #         if self._E_realtion(s, t):
-        #             return i
-
-        # conjecture = MealyMachine(
-        #     Q=len(self.S), input_signs=self.input_signs, output_signs=self.output_signs
-        # )
-        # for i, s in enumerate(self.S):
-        #     for a in self.input_signs:
-        #         conjecture.λ[(i, a)] = self.T[(s, a)]
-        #         conjecture.δ[(i, a)] = _equivalent_in_S(s + a)
-        # return conjecture
 
     def _process_counterexample(self, w):
         states = copy.deepcopy(self.S)
