@@ -78,18 +78,18 @@ class Inferring:
     def _ask_oracle(self, w):
         return self.oracle.route(w)[1]
 
-    def _E_realtion(self, s, t):
-        for e in self.E:
-            if self.T[(s, e)] != self.T[(t, e)]:
-                return False
-        return True
-
     def _query_type1(self, s, e):
         pass
 
     def _query_type2(self, conjecture):
         self.cnt[1] += 1
         return self.target.equiv(conjecture)
+
+    def _E_realtion(self, s, t):
+        for e in self.E:
+            if self.T[(s, e)] != self.T[(t, e)]:
+                return False
+        return True
 
     def _closed(self):
         wlist = []
