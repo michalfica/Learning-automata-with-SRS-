@@ -11,8 +11,8 @@ from inferring.Inferring import Inferring
 
 
 class InferringDFA(Inferring):
-    def __init__(self, target_mm, oracle=None, debug=False):
-        super().__init__(target_mm=target_mm, oracle=oracle, debug=debug)
+    def __init__(self, target, oracle=None, debug=False):
+        super().__init__(target=target, oracle=oracle, debug=debug)
 
     def initialization(self):
         self._extend_E(self.input_signs + [""])
@@ -24,7 +24,7 @@ class InferringDFA(Inferring):
         w = s + e
         if w not in self.queries:
             self.cnt[0] += 1
-            self.queries[w] = self.target_mm.route(w)[1]
+            self.queries[w] = self.target.route(w)[1]
         return self.queries[w]
 
     def create_conjecture(self):

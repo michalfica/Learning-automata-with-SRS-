@@ -15,8 +15,8 @@ from utils.MealyMachine import MealyMachine
 
 
 class InferringMM(Inferring):
-    def __init__(self, target_mm, oracle=None, debug=False):
-        super().__init__(target_mm=target_mm, oracle=oracle, debug=debug)
+    def __init__(self, target, oracle=None, debug=False):
+        super().__init__(target=target, oracle=oracle, debug=debug)
 
     def _initialization(self):
         self._extend_E(self.input_signs)
@@ -31,7 +31,7 @@ class InferringMM(Inferring):
 
             ans = self.queries[w] if w in self.queries else self._ask_oracle(w)
 
-            if ans != self.NO_ANSWER and ans == self.target_mm.route(w)[1]:
+            if ans != self.NO_ANSWER and ans == self.target.route(w)[1]:
                 self.queries[w] = ans
                 return ans[-len(e) :]
 
@@ -39,7 +39,7 @@ class InferringMM(Inferring):
             self.cnt[0] += 1
             if self.debug and self.oracle is not None:
                 print(f"zapytanie o słowo {w}")
-            self.queries[w] = self.target_mm.route(w)[1]
+            self.queries[w] = self.target.route(w)[1]
 
         return self.queries[w][-len(e) :]
 

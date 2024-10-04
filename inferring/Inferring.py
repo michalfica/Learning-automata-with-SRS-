@@ -19,11 +19,11 @@ import copy
 class Inferring:
     NO_ANSWER = ""
 
-    def __init__(self, target_mm, oracle=None, debug=False):
-        self.target_mm = target_mm
+    def __init__(self, target, oracle=None, debug=False):
+        self.target = target
         self.oracle = oracle  # DFA or Mealy machine (for now)
-        self.input_signs = self.target_mm.input_signs
-        self.output_signs = self.target_mm.output_signs
+        self.input_signs = self.target.input_signs
+        self.output_signs = self.target.output_signs
         self.S = set()
         self.E = set()
         self.T = dict()
@@ -89,7 +89,7 @@ class Inferring:
 
     def _query_type2(self, conjecture):
         self.cnt[1] += 1
-        return self.target_mm.equiv(conjecture)
+        return self.target.equiv(conjecture)
 
     def _closed(self):
         wlist = []
