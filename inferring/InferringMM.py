@@ -25,7 +25,6 @@ class InferringMM(Inferring):
         self._extend_S("")
 
     def _query_type1(self, s, e):
-        # return "kurwamac!" # dlaczego się z tym zapętla ? tego  nie wiem
         w = s + e
         if self.oracle is not None:
 
