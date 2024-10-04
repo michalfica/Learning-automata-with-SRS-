@@ -1,11 +1,11 @@
 from importlib import reload
-import utils.Mealymachine as Mealymachine
-import utils.DFA as DFA
+import Mealymachine
+import DFA
 
 reload(Mealymachine)
 reload(DFA)
-from utils.Mealymachine import MealyMachine
-from utils.DFA import DFA
+from Mealymachine import MealyMachine
+from DFA import DFA
 
 import copy
 
@@ -27,15 +27,16 @@ class Inferring:
 
         self.queries = dict()
 
-    def initialization(self):
-        self._extend_E(self.input_signs)
-        for e in self.E:
-            self.T[("", e)] = self._query_type1("" + e)[-len(e) :]
-        self._extend_S("")
+    def _initialization(self):
+        pass
+        # self._extend_E(self.input_signs)
+        # for e in self.E:
+        #     self.T[("", e)] = self._query_type1("" + e)[-len(e) :]
+        # self._extend_S("")
 
     def run(self, counterexamples=False):
         # 1 krok inicljalizacja
-        self.initialization()
+        self._initialization()
         # 2 krok:
         while True:
             if self.debug:
@@ -151,19 +152,20 @@ class Inferring:
         self.E.update(elist)
 
     def _create_conjecture(self):
-        def _equivalent_in_S(s):
-            for i, t in enumerate(self.S):
-                if self._E_realtion(s, t):
-                    return i
+        pass
+        # def _equivalent_in_S(s):
+        #     for i, t in enumerate(self.S):
+        #         if self._E_realtion(s, t):
+        #             return i
 
-        conjecture = MealyMachine(
-            Q=len(self.S), input_signs=self.input_signs, output_signs=self.output_signs
-        )
-        for i, s in enumerate(self.S):
-            for a in self.input_signs:
-                conjecture.λ[(i, a)] = self.T[(s, a)]
-                conjecture.δ[(i, a)] = _equivalent_in_S(s + a)
-        return conjecture
+        # conjecture = MealyMachine(
+        #     Q=len(self.S), input_signs=self.input_signs, output_signs=self.output_signs
+        # )
+        # for i, s in enumerate(self.S):
+        #     for a in self.input_signs:
+        #         conjecture.λ[(i, a)] = self.T[(s, a)]
+        #         conjecture.δ[(i, a)] = _equivalent_in_S(s + a)
+        # return conjecture
 
     def _process_counterexample(self, w):
         states = copy.deepcopy(self.S)

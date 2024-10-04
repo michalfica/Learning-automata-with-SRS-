@@ -1,15 +1,15 @@
 import sys
 
-from importlib import reload
-
 sys.path.append("../")
+sys.path.append("../utils/")
+
+from importlib import reload
 
 import utils.Inferring
 
 reload(utils.Inferring)
 from utils.Inferring import Inferring
 
-import utils.Mealymachine as Mealymachine
 from utils.Mealymachine import MealyMachine
 
 
@@ -17,7 +17,7 @@ class InferringMM(Inferring):
     def __init__(self, target_mm, oracle=None, debug=False):
         super().__init__(target_mm=target_mm, oracle=oracle, debug=debug)
 
-    def initialization(self):
+    def _initialization(self):
         self._extend_E(self.input_signs)
         for e in self.E:
             self.T[("", e)] = self._query_type1("" + e)[-len(e) :]
@@ -41,7 +41,7 @@ class InferringMM(Inferring):
 
         return self.queries[w]
 
-    def create_conjecture(self):
+    def _create_conjecture(self):
         def _equivalent_in_S(s):
             for i, t in enumerate(self.S):
                 if self._E_realtion(s, t):

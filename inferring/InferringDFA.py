@@ -9,9 +9,6 @@ import utils.Inferring
 reload(utils.Inferring)
 from utils.Inferring import Inferring
 
-import utils.Mealymachine as Mealymachine
-from utils.Mealymachine import MealyMachine
-
 
 class InferringDFA(Inferring):
     def __init__(self, target_mm, oracle=None, debug=False):
