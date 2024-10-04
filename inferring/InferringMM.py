@@ -5,11 +5,12 @@ sys.path.append("../utils/")
 
 from importlib import reload
 
-import utils.Inferring
+import inferring.Inferring
+import utils.Mealymachine
 
-reload(utils.Inferring)
-from utils.Inferring import Inferring
-
+reload(inferring.Inferring)
+reload(utils.Mealymachine)
+from inferring.Inferring import Inferring
 from utils.Mealymachine import MealyMachine
 
 

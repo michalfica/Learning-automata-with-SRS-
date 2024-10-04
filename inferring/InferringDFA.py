@@ -4,10 +4,10 @@ from importlib import reload
 
 sys.path.append("../")
 
-import utils.Inferring
+import inferring.Inferring
 
-reload(utils.Inferring)
-from utils.Inferring import Inferring
+reload(inferring.Inferring)
+from inferring.Inferring import Inferring
 
 
 class InferringDFA(Inferring):

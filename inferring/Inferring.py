@@ -1,11 +1,17 @@
 from importlib import reload
-import Mealymachine
-import DFA
 
-reload(Mealymachine)
-reload(DFA)
-from Mealymachine import MealyMachine
-from DFA import DFA
+import sys
+
+sys.path.append("../")
+sys.path.append("../utils")
+
+import utils.Mealymachine
+import utils.DFA
+
+reload(utils.Mealymachine)
+reload(utils.DFA)
+from utils.Mealymachine import MealyMachine
+from utils.DFA import DFA
 
 import copy
 
