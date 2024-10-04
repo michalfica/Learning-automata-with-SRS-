@@ -15,9 +15,13 @@ class InferringDFA(Inferring):
         super().__init__(target_mm=target_mm, oracle=oracle, debug=debug)
 
     def initialization(self):
-        pass
+        self._extend_E(self.input_signs + [""])
+        for e in self.E:
+            self.T[("", e)] = self._query_type1("", e)
+        self._extend_S("")
 
-    def _query_type1(self, w):
+    def _query_type1(self, s, e):
+        w = s + e
         pass
 
     def create_conjecture(self):

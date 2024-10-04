@@ -84,7 +84,7 @@ class Inferring:
                 return False
         return True
 
-    def _query_type1(self, w):
+    def _query_type1(self, s, e):
         pass
 
     def _query_type2(self, conjecture):
@@ -113,19 +113,19 @@ class Inferring:
         self.S.add(s)
         for a in self.input_signs:
             for e in self.E:
-                self.T[(s + a, e)] = self._query_type1(s + a + e)[-len(e) :]
+                self.T[(s + a, e)] = self._query_type1(s + a, e)
 
     def _extend_E(self, elist):
         for s in self.S:
 
             for e in elist:
                 if e not in self.E:
-                    self.T[(s, e)] = self._query_type1(s + e)[-len(e) :]
+                    self.T[(s, e)] = self._query_type1(s, e)
 
             for a in self.input_signs:
                 for e in elist:
                     if e not in self.E and s + a not in self.S:
-                        self.T[(s + a, e)] = self._query_type1(s + a + e)[-len(e) :]
+                        self.T[(s + a, e)] = self._query_type1(s + a, e)
         self.E.update(elist)
 
     def _create_conjecture(self):

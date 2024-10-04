@@ -21,18 +21,19 @@ class InferringMM(Inferring):
     def _initialization(self):
         self._extend_E(self.input_signs)
         for e in self.E:
-            self.T[("", e)] = self._query_type1("" + e)[-len(e) :]
+            self.T[("", e)] = self._query_type1("", e)
         self._extend_S("")
 
-    def _query_type1(self, w):
+    def _query_type1(self, s, e):
         # return "kurwamac!" # dlaczego się z tym zapętla ? tego  nie wiem
+        w = s + e
         if self.oracle is not None:
 
             ans = self.queries[w] if w in self.queries else self._ask_oracle(w)
 
             if ans != self.NO_ANSWER and ans == self.target_mm.route(w)[1]:
                 self.queries[w] = ans
-                return ans
+                return ans[-len(e) :]
 
         if w not in self.queries:
             self.cnt[0] += 1
@@ -40,7 +41,7 @@ class InferringMM(Inferring):
                 print(f"zapytanie o słowo {w}")
             self.queries[w] = self.target_mm.route(w)[1]
 
-        return self.queries[w]
+        return self.queries[w][-len(e) :]
 
     def _create_conjecture(self):
         def _equivalent_in_S(s):
