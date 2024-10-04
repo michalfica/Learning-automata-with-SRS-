@@ -5,12 +5,12 @@ import sys
 sys.path.append("../")
 sys.path.append("../utils")
 
-import utils.Mealymachine
+import utils.MealyMachine
 import utils.DFA
 
-reload(utils.Mealymachine)
+reload(utils.MealyMachine)
 reload(utils.DFA)
-from utils.Mealymachine import MealyMachine
+from utils.MealyMachine import MealyMachine
 from utils.DFA import DFA
 
 import copy

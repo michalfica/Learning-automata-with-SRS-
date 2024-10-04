@@ -1,4 +1,4 @@
-from utils.Mealymachine import MealyMachine
+from utils.MealyMachine import MealyMachine
 from itertools import product
 import numpy as np
 

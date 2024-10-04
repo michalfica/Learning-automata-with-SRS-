@@ -6,12 +6,12 @@ sys.path.append("../utils/")
 from importlib import reload
 
 import inferring.Inferring
-import utils.Mealymachine
+import utils.MealyMachine
 
 reload(inferring.Inferring)
-reload(utils.Mealymachine)
+reload(utils.MealyMachine)
 from inferring.Inferring import Inferring
-from utils.Mealymachine import MealyMachine
+from utils.MealyMachine import MealyMachine
 
 
 class InferringMM(Inferring):
