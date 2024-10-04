@@ -3,11 +3,14 @@ import sys
 from importlib import reload
 
 sys.path.append("../")
-
+sys.path.append("../utils/")
 import inferring.Inferring
+import utils.DFA
 
 reload(inferring.Inferring)
+reload(utils.DFA)
 from inferring.Inferring import Inferring
+from utils.DFA import DFA
 
 
 class InferringDFA(Inferring):
@@ -28,4 +31,16 @@ class InferringDFA(Inferring):
         return self.queries[w]
 
     def create_conjecture(self):
-        pass
+        def _equivalent_in_S(s):
+            for i, t in enumerate(self.S):
+                if self._E_realtion(s, t):
+                    return i
+
+        conjecture = DFA(Q=len(self.S), input_signs=self.input_signs)
+        for i, s in enumerate(self.S):
+            for a in self.input_signs:
+                conjecture.δ[(i, a)] = _equivalent_in_S(s + a)
+            if self.T[(s, "")] == 1:
+                conjecture.F.add(s)
+
+        return conjecture
