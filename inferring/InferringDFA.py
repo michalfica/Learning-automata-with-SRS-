@@ -22,7 +22,10 @@ class InferringDFA(Inferring):
 
     def _query_type1(self, s, e):
         w = s + e
-        pass
+        if w not in self.queries:
+            self.cnt[0] += 1
+            self.queries[w] = self.target_mm.route(w)[1]
+        return self.queries[w]
 
     def create_conjecture(self):
         pass
