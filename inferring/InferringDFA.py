@@ -1,5 +1,5 @@
 import sys
-
+import copy
 from importlib import reload
 
 sys.path.append("../")
@@ -17,7 +17,7 @@ class InferringDFA(Inferring):
     def __init__(self, target, oracle=None, debug=False):
         super().__init__(target=target, oracle=oracle, debug=debug)
 
-    def initialization(self):
+    def _initialization(self):
         self._extend_E(self.input_signs + [""])
         for e in self.E:
             self.T[("", e)] = self._query_type1("", e)
@@ -26,21 +26,30 @@ class InferringDFA(Inferring):
     def _query_type1(self, s, e):
         w = s + e
         if w not in self.queries:
+            # print(f"pytam o {w}")
             self.cnt[0] += 1
             self.queries[w] = self.target.route(w)[1]
         return self.queries[w]
 
-    def create_conjecture(self):
+    def _create_conjecture(self):
         def _equivalent_in_S(s):
             for i, t in enumerate(self.S):
                 if self._E_realtion(s, t):
                     return i
 
-        conjecture = DFA(Q=len(self.S), input_signs=self.input_signs)
+        conjecture = DFA(Q=len(self.S), input_signs=self.input_signs, F=set())
+        print(f"stany akceptujące hipotezy NA POCZATKU: {conjecture.F}")
         for i, s in enumerate(self.S):
             for a in self.input_signs:
                 conjecture.δ[(i, a)] = _equivalent_in_S(s + a)
-            if self.T[(s, "")] == 1:
-                conjecture.F.add(s)
+            if self.debug:
+                check_accepting_state = self.T[(s, "")]
+                print(
+                    f"sprawdzam czy stan {i}, {s} czy jest akceptujący: {check_accepting_state}"
+                )
+            if self.T[(s, "")] == DFA.ACCEPT:
+                conjecture.F.add(i)
 
-        return conjecture
+        print(f"stany akceptujące hipotezy: {conjecture.F}")
+        print("\n\n")
+        return copy.deepcopy(conjecture)

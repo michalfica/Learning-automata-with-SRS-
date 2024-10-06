@@ -10,15 +10,31 @@ class DFA:
     """
 
     NO_ANSWER = ""
+    ACCEPT = 1
 
     def __init__(self, Q, input_signs=[], δ=dict(), F=set()):
+
+        print(f"tworze dfa z F = {F}")
         self.Q = Q
         self.input_signs = input_signs
+        self.output_signs = []
         self.δ = δ
         self.F = F
 
     def __str__(self):
         return f"DFA amount of states = {self.Q}, transitions = {self.δ}, accept states = {self.F}"
+
+    def print_transitions(self):
+        for q in range(self.Q):
+            for a in self.input_signs:
+                assert (
+                    q,
+                    a,
+                ) in self.δ, (
+                    "nie ma taiego przejścia w maszynie, potencjalnie zły alfabet!"
+                )
+                print(f"({q},{a}) --> {self.δ[(q,a)]}")
+        print(f"stany akceptujące - {self.F}")
 
     def route(self, w):
         q, v = 0, ""
