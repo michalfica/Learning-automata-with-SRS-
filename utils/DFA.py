@@ -13,8 +13,6 @@ class DFA:
     ACCEPT = 1
 
     def __init__(self, Q, input_signs=[], δ=dict(), F=set()):
-
-        print(f"tworze dfa z F = {F}")
         self.Q = Q
         self.input_signs = input_signs
         self.output_signs = []

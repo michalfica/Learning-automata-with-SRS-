@@ -38,18 +38,9 @@ class InferringDFA(Inferring):
                     return i
 
         conjecture = DFA(Q=len(self.S), input_signs=self.input_signs, F=set())
-        print(f"stany akceptujące hipotezy NA POCZATKU: {conjecture.F}")
         for i, s in enumerate(self.S):
             for a in self.input_signs:
                 conjecture.δ[(i, a)] = _equivalent_in_S(s + a)
-            if self.debug:
-                check_accepting_state = self.T[(s, "")]
-                print(
-                    f"sprawdzam czy stan {i}, {s} czy jest akceptujący: {check_accepting_state}"
-                )
             if self.T[(s, "")] == DFA.ACCEPT:
                 conjecture.F.add(i)
-
-        print(f"stany akceptujące hipotezy: {conjecture.F}")
-        print("\n\n")
         return copy.deepcopy(conjecture)
