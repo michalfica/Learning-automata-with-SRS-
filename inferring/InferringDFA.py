@@ -11,6 +11,7 @@ reload(inferring.Inferring)
 reload(utils.DFA)
 from inferring.Inferring import Inferring
 from utils.DFA import DFA
+import oracle1
 
 
 class InferringDFA(Inferring):
@@ -25,8 +26,18 @@ class InferringDFA(Inferring):
 
     def _query_type1(self, s, e):
         w = s + e
+        if self.oracle is not None:
+            ans = (
+                self.queries[w]
+                if w in self.queries
+                else self.oracle.ask_oracle(w, self.queries)
+            )
+            if ans != self.oracle.NO_ANSWER:
+                self.queries[w] = ans
+                return ans
+
         if w not in self.queries:
-            # print(f"pytam o {w}")
+            print(f"pytam o słowo {w}")
             self.cnt[0] += 1
             self.queries[w] = self.target.route(w)[1]
         return self.queries[w]
