@@ -6,17 +6,32 @@ from itertools import product
 
 
 class convDFA(DFA):
-    def __init__(self, dfa1, dfa2):
-        input_signs_ = [a + "1" for a in dfa1.input_signs] + [
-            a + "2" for a in dfa2.input_signs
-        ]
-        super().__init__(Q=dfa1.Q * dfa2.Q, input_signs=[])
-        self.input_signs = input_signs_
-        self.state_mapping = dict()
-        self._compute_state_transitions(dfa1, dfa2)
-        self.F = copy.deepcopy(
-            set([self.state_mapping[q] for q in product(dfa1.F, dfa2.F)])
-        )
+    """
+    Dwa rodzaje konstrukci:
+    (1) dane dwa automaty, tworzę ich splot,
+    (2) dany odrazu splot 'jakiś' dwóch automatów.
+    """
+
+    def __init__(self, *args, **kwargs):
+        if kwargs.get("type") == "dfa":
+            super().__init__(
+                Q=kwargs.get("Q"),
+                input_signs=kwargs.get("input_signs"),
+                F=kwargs.get("F"),
+            )
+        elif kwargs.get("type") == "conv":
+            dfa1, dfa2 = kwargs.get("dfa1"), kwargs.get("dfa2")
+            input_signs_ = [a + "1" for a in dfa1.input_signs] + [
+                a + "2" for a in dfa2.input_signs
+            ]
+            super().__init__(Q=dfa1.Q * dfa2.Q, input_signs=input_signs_)
+            self.state_mapping = dict()
+            self._compute_state_transitions(dfa1, dfa2)
+            self.F = copy.deepcopy(
+                set([self.state_mapping[q] for q in product(dfa1.F, dfa2.F)])
+            )
+        else:
+            assert False, "coś nie tak z argumentami do konstruktora !"
 
     def _compute_state_transitions(self, dfa1, dfa2):
         def find_new_state(q, a):
