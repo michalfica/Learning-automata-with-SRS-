@@ -36,7 +36,6 @@ class InferringDFA(Inferring):
                 return ans
 
         if w not in self.queries:
-            print(f"pytam o słowo {w}")
             self.cnt[0] += 1
             self.queries[w] = self.target.route(w)[1]
         return self.queries[w]

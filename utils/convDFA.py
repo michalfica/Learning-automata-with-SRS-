@@ -50,12 +50,3 @@ class convDFA(DFA):
         for x in nested_loop2:
             for a in self.input_signs:
                 self.δ[(self.state_mapping[x], a)] = find_new_state(x, a)
-
-    def route(self, w):
-        q = 0
-        for a in w:
-            assert (q, a) in self.δ, "nie ma takie przejścia w maszynie!"
-            q = self.δ[(q, a)]
-        if q in self.F:
-            return (w, 1)
-        return (w, 0)
