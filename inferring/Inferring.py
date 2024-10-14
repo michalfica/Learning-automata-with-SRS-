@@ -63,6 +63,7 @@ class Inferring:
             if check == False:
                 if self.debug:
                     print(f"kontrprzyklad = {x}")
+                print(f"kontrprzyklad = {x}")
                 self.counterexamples.append(x)
                 self._process_counterexample(x)
             else:
