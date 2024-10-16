@@ -1,6 +1,7 @@
 from InferringDFA import InferringDFA
 from utils.DFA import DFA
 from utils.convDFA import convDFA
+from oracle1Conv import Oracle1Conv
 import copy
 
 """
@@ -11,6 +12,9 @@ import copy
 
 class InferringconvDFA(InferringDFA):
     def __init__(self, target, oracle=None, debug=False):
+        if oracle is not None:
+            oracle = Oracle1Conv(target.input_signs)
+
         super().__init__(target=target, oracle=oracle, debug=debug)
 
     def _create_conjecture(self):
