@@ -14,8 +14,13 @@ from utils.DFA import DFA
 
 
 class InferringDFA(Inferring):
-    def __init__(self, target, oracle=None, debug=False):
-        super().__init__(target=target, oracle=oracle, debug=debug)
+    def __init__(self, target, oracle=None, debug=False, check_consistency=False):
+        super().__init__(
+            target=target,
+            oracle=oracle,
+            debug=debug,
+            check_consistency=check_consistency,
+        )
 
     def _initialization(self):
         self._extend_E(self.input_signs + [""])

@@ -19,7 +19,7 @@ import copy
 class Inferring:
     NO_ANSWER = ""
 
-    def __init__(self, target, oracle=None, debug=False):
+    def __init__(self, target, oracle=None, debug=False, check_consistency=False):
         self.target = target
         self.oracle = oracle  # DFA or Mealy machine (for now)
         self.input_signs = self.target.input_signs
@@ -32,6 +32,7 @@ class Inferring:
         self.debug = debug
 
         self.queries = dict()
+        self.check_consistency = check_consistency
 
     def _initialization(self):
         pass
@@ -58,6 +59,26 @@ class Inferring:
                 print(f"hipoteza: ")
                 conjecture.print_transitions()
 
+            if self.check_consistency:
+                assert (
+                    self.oracle is not None
+                ), "Nie można sprawdzać zgodności z więzami gdy nie ma więzów!"
+
+                if self.debug:
+                    print("sprawdzam ZGODNOŚĆ z więzami")
+
+                xs = self._check_consistenticy_with_pi(
+                    copy.deepcopy(conjecture), copy.deepcopy(self.oracle)
+                )
+                if self.debug:
+                    print(f"z niezgodnośći wynikaja takie kontrprzykłady: {xs}")
+
+                for x in xs:
+                    # if self.debug:
+                    # print(f"kontrprzyklad typu NIEZGODNOŚĆ Z WIEZAMI = {x}")
+                    self.counterexamples.append(x)
+                    self._process_counterexample(x)
+
             check, x = self._query_type2(conjecture)
 
             if check == False:
@@ -75,6 +96,8 @@ class Inferring:
                     )
                 else:
                     return (conjecture, self.cnt)
+
+            print("\n\n")
 
     def _ask_oracle(self, w):
         return self.oracle.route(w)[1]
@@ -153,3 +176,6 @@ class Inferring:
             suffix = a + suffix
             suffixes.append(suffix)
         self._extend_E(suffixes)
+
+    def _check_consistenticy_with_pi(self):
+        pass

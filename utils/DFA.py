@@ -19,6 +19,8 @@ class DFA:
         self.δ = δ
         self.F = F
 
+        self.mapping = dict()  # mapowanie stanów w stringi
+
     def __str__(self):
         return f"DFA amount of states = {self.Q}, transitions = {self.δ}, accept states = {self.F}"
 
@@ -42,6 +44,13 @@ class DFA:
         if q in self.F:
             return (w, 1)
         return (w, 0)
+
+    def route_and_return_q(self, w, q0=0):
+        q = q0
+        for a in w:
+            assert (q, a) in self.δ, "nie ma takie przejścia w maszynie!"
+            q = self.δ[(q, a)]
+        return q
 
     """
     specyficzne przechodzenie po automacie, tworzymy zarazem słowo, 
