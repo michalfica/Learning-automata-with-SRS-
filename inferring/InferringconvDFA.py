@@ -78,5 +78,5 @@ class InferringconvDFA(InferringDFA):
                         counterexamples.add(c1)
                     if self.target.route(c2)[1] != conjecture.route(c2)[1]:
                         counterexamples.add(c2)
-                    # self.cnt[0] += 2
+                    self.cnt[0] += 2
         return counterexamples
