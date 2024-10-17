@@ -49,7 +49,9 @@ class InferringconvDFA(InferringDFA):
                     w=e, q0=q1
                 ), conjecture.route_and_return_q(w=e, q0=q2)
 
-                if q1e != q2e:
+                if (q1e in conjecture.F and q2e not in conjecture.F) or (
+                    q1e not in conjecture.F and q2e in conjecture.F
+                ):
                     return copy.deepcopy(e)
 
             assert False, "Nie powiodło się szukanie słowa rozróżniającego!"

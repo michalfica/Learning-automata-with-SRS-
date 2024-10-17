@@ -79,12 +79,21 @@ class Inferring:
                     self.counterexamples.append(x)
                     self._process_counterexample(x)
 
+                check, x = self._closed()
+                while check == False:
+                    self._extend_S(x)
+                    check, x = self._closed()
+
+                conjecture = self._create_conjecture()
+                if self.debug:
+                    print(f"stworzyłem nową hipoteze:")
+                    conjecture.print_transitions()
             check, x = self._query_type2(conjecture)
 
             if check == False:
                 if self.debug:
-                    print(f"kontrprzyklad = {x}")
-                print(f"kontrprzyklad = {x}")
+                    print(f"kontrprzyklad (z zapytania o równoważność)= {x}")
+                # print(f"kontrprzyklad = {x}")
                 self.counterexamples.append(x)
                 self._process_counterexample(x)
             else:
