@@ -74,8 +74,6 @@ class Inferring:
                     print(f"z niezgodnośći wynikaja takie kontrprzykłady: {xs}")
 
                 for x in xs:
-                    # if self.debug:
-                    # print(f"kontrprzyklad typu NIEZGODNOŚĆ Z WIEZAMI = {x}")
                     self.counterexamples.append(x)
                     self._process_counterexample(x)
 
@@ -93,7 +91,6 @@ class Inferring:
             if check == False:
                 if self.debug:
                     print(f"kontrprzyklad (z zapytania o równoważność)= {x}")
-                # print(f"kontrprzyklad = {x}")
                 self.counterexamples.append(x)
                 self._process_counterexample(x)
             else:
@@ -106,7 +103,8 @@ class Inferring:
                 else:
                     return (conjecture, self.cnt)
 
-            print("\n\n")
+            if self.debug:
+                print("\n\n")
 
     def _ask_oracle(self, w):
         return self.oracle.route(w)[1]
