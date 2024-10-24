@@ -45,7 +45,7 @@ class OracleProf:
             return OracleProf.NO_ANSWER
 
         result = BFS()
-        print(f"oracle mi odpowiedziala na {w} - {result}")
+        # print(f"oracle mi odpowiedziala na {w} - {result}")
         return result
 
     def get_adjacents(self, w):

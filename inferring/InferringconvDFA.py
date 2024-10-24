@@ -39,44 +39,47 @@ class InferringconvDFA(InferringDFA):
                 conjecture.F.add(i)
         return copy.deepcopy(conjecture)
 
-    def _check_consistenticy_with_pi(self, conjecture, oracle):
-        def get_distinction_word(q1, q2):
-            for e in self.E:
-                if e == "":
-                    continue
+    # def _check_consistenticy_with_pi(self, conjecture, oracle):
+    #     def get_distinction_word(q1, q2):
+    #         for e in self.E:
+    #             if e == "":
+    #                 continue
 
-                q1e, q2e = conjecture.route_and_return_q(
-                    w=e, q0=q1
-                ), conjecture.route_and_return_q(w=e, q0=q2)
+    #             q1e, q2e = conjecture.route_and_return_q(
+    #                 w=e, q0=q1
+    #             ), conjecture.route_and_return_q(w=e, q0=q2)
 
-                if (q1e in conjecture.F and q2e not in conjecture.F) or (
-                    q1e not in conjecture.F and q2e in conjecture.F
-                ):
-                    return copy.deepcopy(e)
+    #             if (q1e in conjecture.F and q2e not in conjecture.F) or (
+    #                 q1e not in conjecture.F and q2e in conjecture.F
+    #             ):
+    #                 return copy.deepcopy(e)
 
-            assert False, "Nie powiodło się szukanie słowa rozróżniającego!"
+    #         assert False, "Nie powiodło się szukanie słowa rozróżniającego!"
 
-        counterexamples = set()
-        for q in range(conjecture.Q):
-            for l, r in oracle.pi:
-                q1, q2 = conjecture.route_and_return_q(
-                    w=l, q0=q
-                ), conjecture.route_and_return_q(w=r, q0=q)
+    #     counterexamples = set()
+    #     for q in range(conjecture.Q):
+    #         for l, r in oracle.pi:
+    #             q1, q2 = conjecture.route_and_return_q(
+    #                 w=l, q0=q
+    #             ), conjecture.route_and_return_q(w=r, q0=q)
 
-                if q1 != q2:
-                    y = get_distinction_word(q1, q2)
-                    s = conjecture.mapping[q]
+    #             if q1 != q2:
+    #                 y = get_distinction_word(q1, q2)
+    #                 s = conjecture.mapping[q]
 
-                    print(
-                        f"q = {q}, q1 = {q1}, q2 = {q2}, s = {s}, (l, r) = ({l},{r}), y = {y} "
-                    )
-                    c1, c2 = (
-                        copy.deepcopy(s) + copy.deepcopy(l) + copy.deepcopy(y),
-                        copy.deepcopy(s) + copy.deepcopy(r) + copy.deepcopy(y),
-                    )
-                    if self.target.route(c1)[1] != conjecture.route(c1)[1]:
-                        counterexamples.add(c1)
-                    if self.target.route(c2)[1] != conjecture.route(c2)[1]:
-                        counterexamples.add(c2)
-                    self.cnt[0] += 2
-        return counterexamples
+    #                 print(
+    #                     f"q = {q}, q1 = {q1}, q2 = {q2}, s = {s}, (l, r) = ({l},{r}), y = {y} "
+    #                 )
+    #                 c1, c2 = (
+    #                     copy.deepcopy(s) + copy.deepcopy(l) + copy.deepcopy(y),
+    #                     copy.deepcopy(s) + copy.deepcopy(r) + copy.deepcopy(y),
+    #                 )
+    #                 self.cnt[0] += 1
+    #                 if self.target.route(c1)[1] != conjecture.route(c1)[1]:
+    #                     counterexamples.add(c1)
+    #                     return counterexamples
+    #                 self.cnt[0] += 1
+    #                 if self.target.route(c2)[1] != conjecture.route(c2)[1]:
+    #                     counterexamples.add(c2)
+    #                     return counterexamples
+    #     return counterexamples

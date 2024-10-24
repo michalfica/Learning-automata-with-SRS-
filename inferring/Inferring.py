@@ -72,20 +72,26 @@ class Inferring:
                 )
                 if self.debug:
                     print(f"z niezgodnośći wynikaja takie kontrprzykłady: {xs}")
+                while len(xs) > 0:
+                    for x in xs:
+                        self.counterexamples.append(x)
+                        self._process_counterexample(x)
 
-                for x in xs:
-                    self.counterexamples.append(x)
-                    self._process_counterexample(x)
-
-                check, x = self._closed()
-                while check == False:
-                    self._extend_S(x)
                     check, x = self._closed()
+                    while check == False:
+                        self._extend_S(x)
+                        check, x = self._closed()
 
-                conjecture = self._create_conjecture()
-                if self.debug:
-                    print(f"stworzyłem nową hipoteze:")
-                    conjecture.print_transitions()
+                    conjecture = self._create_conjecture()
+                    if self.debug:
+                        print(f"stworzyłem nową hipoteze:")
+                        conjecture.print_transitions()
+                    xs = self._check_consistenticy_with_pi(
+                        copy.deepcopy(conjecture), copy.deepcopy(self.oracle)
+                    )
+                    if self.debug:
+                        print(f"z niezgodnośći wynikaja takie kontrprzykłady: {xs}")
+
             check, x = self._query_type2(conjecture)
 
             if check == False:
@@ -184,5 +190,47 @@ class Inferring:
             suffixes.append(suffix)
         self._extend_E(suffixes)
 
-    def _check_consistenticy_with_pi(self):
-        pass
+    def _check_consistenticy_with_pi(self, conjecture, oracle):
+        def get_distinction_word(q1, q2):
+            for e in self.E:
+                if e == "":
+                    continue
+
+                q1e, q2e = conjecture.route_and_return_q(
+                    w=e, q0=q1
+                ), conjecture.route_and_return_q(w=e, q0=q2)
+
+                if (q1e in conjecture.F and q2e not in conjecture.F) or (
+                    q1e not in conjecture.F and q2e in conjecture.F
+                ):
+                    return copy.deepcopy(e)
+
+            assert False, "Nie powiodło się szukanie słowa rozróżniającego!"
+
+        counterexamples = set()
+        for q in range(conjecture.Q):
+            for l, r in oracle.pi:
+                q1, q2 = conjecture.route_and_return_q(
+                    w=l, q0=q
+                ), conjecture.route_and_return_q(w=r, q0=q)
+
+                if q1 != q2:
+                    y = get_distinction_word(q1, q2)
+                    s = conjecture.mapping[q]
+
+                    print(
+                        f"q = {q}, q1 = {q1}, q2 = {q2}, s = {s}, (l, r) = ({l},{r}), y = {y} "
+                    )
+                    c1, c2 = (
+                        copy.deepcopy(s) + copy.deepcopy(l) + copy.deepcopy(y),
+                        copy.deepcopy(s) + copy.deepcopy(r) + copy.deepcopy(y),
+                    )
+                    self.cnt[0] += 1
+                    if self.target.route(c1)[1] != conjecture.route(c1)[1]:
+                        counterexamples.add(c1)
+                        return counterexamples
+                    self.cnt[0] += 1
+                    if self.target.route(c2)[1] != conjecture.route(c2)[1]:
+                        counterexamples.add(c2)
+                        return counterexamples
+        return counterexamples
