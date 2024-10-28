@@ -218,9 +218,9 @@ class Inferring:
                     y = get_distinction_word(q1, q2)
                     s = conjecture.mapping[q]
 
-                    print(
-                        f"q = {q}, q1 = {q1}, q2 = {q2}, s = {s}, (l, r) = ({l},{r}), y = {y} "
-                    )
+                    # print(
+                    #     f"q = {q}, q1 = {q1}, q2 = {q2}, s = {s}, (l, r) = ({l},{r}), y = {y} "
+                    # )
                     c1, c2 = (
                         copy.deepcopy(s) + copy.deepcopy(l) + copy.deepcopy(y),
                         copy.deepcopy(s) + copy.deepcopy(r) + copy.deepcopy(y),
