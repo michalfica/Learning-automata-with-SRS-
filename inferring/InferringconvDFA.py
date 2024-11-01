@@ -11,15 +11,15 @@ import copy
 
 
 class InferringconvDFA(InferringDFA):
-    def __init__(self, target, oracle=None, debug=False, check_consistency=False):
+    def __init__(self, target, oracle=None, check_consistency=False, debug=False):
         if oracle is not None:
             oracle = Oracle1Conv(target.input_signs)
 
         super().__init__(
             target=target,
             oracle=oracle,
-            debug=debug,
             check_consistency=check_consistency,
+            debug=debug,
         )
 
     def _create_conjecture(self):

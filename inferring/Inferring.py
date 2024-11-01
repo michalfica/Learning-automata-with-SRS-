@@ -19,7 +19,7 @@ import copy
 class Inferring:
     NO_ANSWER = ""
 
-    def __init__(self, target, oracle=None, debug=False, check_consistency=False):
+    def __init__(self, target, oracle=None, check_consistency=False, debug=False):
         self.target = target
         self.oracle = oracle  # DFA or Mealy machine (for now)
         self.input_signs = self.target.input_signs
@@ -229,8 +229,7 @@ class Inferring:
                     if self.target.route(c1)[1] != conjecture.route(c1)[1]:
                         counterexamples.add(c1)
                         return counterexamples
-                    self.cnt[0] += 1
-                    if self.target.route(c2)[1] != conjecture.route(c2)[1]:
+                    else:
                         counterexamples.add(c2)
                         return counterexamples
         return counterexamples
