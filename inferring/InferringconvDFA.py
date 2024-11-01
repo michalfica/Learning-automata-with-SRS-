@@ -1,7 +1,7 @@
 from InferringDFA import InferringDFA
 from utils.DFA import DFA
 from utils.convDFA import convDFA
-from oracle1Conv import Oracle1Conv
+from utils.oracles.oracle1Conv import Oracle1Conv
 import copy
 
 """

@@ -1,5 +1,5 @@
 # from oracle1 import Oracle1
-from oracle1prof import OracleProf
+from utils.oracles.oracle1prof import OracleProf
 
 """klasa implementująca więzy:
  SYSTEM PRZEPISYWANIA SŁÓW, reguła: ZAMIEŃ SĄSIEDNIE LITERY, ale
