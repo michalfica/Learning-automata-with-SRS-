@@ -5,12 +5,12 @@ from importlib import reload
 sys.path.append("../")
 sys.path.append("../utils/")
 import inferring.Inferring
-import utils.DFA
+import utils.automats.DFA
 
 reload(inferring.Inferring)
-reload(utils.DFA)
+reload(utils.automats.DFA)
 from inferring.Inferring import Inferring
-from utils.DFA import DFA
+from utils.automats.DFA import DFA
 
 
 class InferringDFA(Inferring):
