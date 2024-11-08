@@ -22,37 +22,33 @@ class OracleProf:
     """sprawdza czy odpowieć o należenie słowa 'w' do języka można wywnioskować 
     na podstawie zbioru słów, o krórych już wiem czy należą do języka ('answers')"""
 
+    def get_normal_form(self, w):
+        normal_form = copy.deepcopy(w)
+
+        while True:
+            check = False
+            for l, r in self.pi:
+                find_all = [
+                    i.start() for i in re.finditer("(?=" + l + ")", normal_form)
+                ]  # wszytskie wystapienia l w słowie w
+
+                if len(find_all) == 0:
+                    continue
+
+                check = True
+                normal_form = (
+                    "".join(normal_form[: find_all[0]])
+                    + copy.deepcopy(r)
+                    + normal_form[find_all[0] + len(l) :]
+                )
+                break
+            if check == False:
+                break
+        return normal_form
+
     def ask_oracle(self, w, answers):
-        def BFS():
-            visited = dict()
-            Q = Queue()
-
-            def addToQueue(state):
-                if not state in visited:
-                    visited[state] = True
-                    Q.put(state)
-
-            addToQueue(w)
-            while not Q.empty():
-                q = Q.get()
-
-                if q in answers:
-                    return answers[q]
-
-                adjacents = self.get_adjacents(q)
-                for t in adjacents:
-                    addToQueue(t)
+        nrm_form = self.get_normal_form(w)
+        if nrm_form in answers:
+            return answers[nrm_form]
+        else:
             return OracleProf.NO_ANSWER
-
-        result = BFS()
-        # print(f"oracle mi odpowiedziala na {w} - {result}")
-        return result
-
-    def get_adjacents(self, w):
-        s = set()
-        for l, r in self.pi:
-            find_all = [i.start() for i in re.finditer("(?=" + l + ")", w)]
-            for i in find_all:
-                t = "".join(w[:i]) + copy.deepcopy(r) + w[i + len(l) :]
-                s.add(t)
-        return s

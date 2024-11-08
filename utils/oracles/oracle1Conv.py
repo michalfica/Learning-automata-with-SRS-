@@ -1,4 +1,9 @@
 # from oracle1 import Oracle1
+from importlib import reload
+import utils.oracles.oracle1prof as oracle1prof
+
+reload(oracle1prof)
+
 from utils.oracles.oracle1prof import OracleProf
 
 """klasa implementująca więzy:
@@ -16,19 +21,4 @@ class Oracle1Conv(OracleProf):
         for a in upper_letters:
             for b in lower_letters:
                 pi.append((a + b, b + a))
-                pi.append((b + a, a + b))
         self.pi = pi
-
-    # def __init__(self):
-    #     super().__init__()
-
-    # def get_adjacents(self, w):
-    #     def get_type(s):
-    #         return s.isupper()
-
-    #     s = set()
-    #     for i in range(len(w) - 1):
-    #         if get_type(w[i]) != get_type(w[i + 1]):
-    #             t = "".join(w[:i]) + w[i + 1] + w[i] + w[i + 2 :]
-    #             s.add(t)
-    #     return s
