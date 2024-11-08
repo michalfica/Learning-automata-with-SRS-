@@ -1,7 +1,7 @@
 from InferringDFA import InferringDFA
 from utils.automats.DFA import DFA
 from utils.automats.convDFA import convDFA
-from utils.oracles.oracle1Conv import Oracle1Conv
+from utils.oracles.SRSconv import SRSconv
 import copy
 
 """
@@ -13,7 +13,7 @@ import copy
 class InferringconvDFA(InferringDFA):
     def __init__(self, target, oracle=None, check_consistency=False, debug=False):
         if oracle is not None:
-            oracle = Oracle1Conv(target.input_signs)
+            oracle = SRSconv(target.input_signs)
 
         super().__init__(
             target=target,

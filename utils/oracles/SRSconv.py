@@ -1,17 +1,17 @@
 # from oracle1 import Oracle1
 from importlib import reload
-import utils.oracles.oracle1prof as oracle1prof
+import utils.oracles.SRS as SRS
 
-reload(oracle1prof)
+reload(SRS)
 
-from utils.oracles.oracle1prof import OracleProf
+from utils.oracles.SRS import SRS
 
 """klasa implementująca więzy:
  SYSTEM PRZEPISYWANIA SŁÓW, reguła: ZAMIEŃ SĄSIEDNIE LITERY, ale
  zamienia tylko litery z 'różnych' alfabetów """
 
 
-class Oracle1Conv(OracleProf):
+class SRSconv(SRS):
 
     def __init__(self, alphabet=[]):
         upper_letters = [a for a in alphabet if a.isupper()]

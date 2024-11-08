@@ -6,7 +6,7 @@ import re
 SYSTEM PRZEPISYWANIA SŁÓW"""
 
 
-class OracleProf:
+class SRS:
     NO_ANSWER = ""
 
     def __init__(self, pi):
@@ -51,4 +51,4 @@ class OracleProf:
         if nrm_form in answers:
             return answers[nrm_form]
         else:
-            return OracleProf.NO_ANSWER
+            return SRS.NO_ANSWER
