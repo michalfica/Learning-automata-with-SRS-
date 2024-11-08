@@ -1,6 +1,6 @@
 from InferringDFA import InferringDFA
-from utils.automats.DFA import DFA
-from utils.automats.convDFA import convDFA
+from utils.automats.DFA.DFA import DFA
+from utils.automats.DFA.convDFA import convDFA
 from utils.oracles.SRSconv import SRSconv
 import copy
 

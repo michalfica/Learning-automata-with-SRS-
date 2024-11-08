@@ -1,4 +1,4 @@
-from utils.automats.MealyMachine import MealyMachine
+from utils.automats.MM.MealyMachine import MealyMachine
 from itertools import product
 
 

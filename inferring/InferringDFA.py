@@ -4,13 +4,14 @@ from importlib import reload
 
 sys.path.append("../")
 sys.path.append("../utils/")
+sys.path.append("../utils/DFA")
 import inferring.Inferring
 import utils.automats.DFA
 
 reload(inferring.Inferring)
 reload(utils.automats.DFA)
 from inferring.Inferring import Inferring
-from utils.automats.DFA import DFA
+from utils.automats.DFA.DFA import DFA
 
 
 class InferringDFA(Inferring):

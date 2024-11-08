@@ -1,4 +1,4 @@
-from utils.automats.DFA import DFA
+from utils.automats.DFA.DFA import DFA
 from itertools import product
 
 
