@@ -30,20 +30,24 @@ class InferringDFA(Inferring):
 
     def _query_type1(self, s, e):
         w = s + e
+
+        if w in self.queries:
+            return self.queries[w]
+
         if self.oracle is not None:
-            ans = (
-                self.queries[w]
-                if w in self.queries
-                else self.oracle.ask_oracle(w, self.queries)
-            )
+            ans = self.oracle.ask_oracle(w, self.queries)
             if ans != self.oracle.NO_ANSWER:
-                self.queries[w] = ans
                 return ans
 
-        if w not in self.queries:
-            self.cnt[0] += 1
-            self.queries[w] = self.target.route(w)[1]
-        return self.queries[w]
+        self.cnt[0] += 1
+        ans = self.target.route(w)[1]
+        self.queries[w] = ans
+
+        if self.oracle is not None:
+            w_norm = self.oracle.get_normal_form(w)
+            self.queries[w_norm] = ans
+
+        return ans
 
     def _create_conjecture(self):
         def _equivalent_in_S(s):
