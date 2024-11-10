@@ -36,28 +36,8 @@ class PatternMM(MealyMachine):
             return self.state_mapping[tuple(state)]
 
         xs = [range(len(x) + 1) for x in self.patterns]
+        nested_loop1, nested_loop2 = product(*xs), product(*xs)
 
-        match self.n:
-            case 1:
-                nested_loop1, nested_loop2 = product(xs[0]), product(xs[0])
-            case 2:
-                nested_loop1, nested_loop2 = product(xs[0], xs[1]), product(
-                    xs[0], xs[1]
-                )
-            case 3:
-                nested_loop1, nested_loop2 = product(xs[0], xs[1], xs[2]), product(
-                    xs[0], xs[1], xs[2]
-                )
-            case 4:
-                nested_loop1, nested_loop2 = product(
-                    xs[0], xs[1], xs[2], xs[3]
-                ), product(xs[0], xs[1], xs[2], xs[3])
-            case 5:
-                nested_loop1, nested_loop2 = product(
-                    xs[0], xs[1], xs[2], xs[3], xs[4]
-                ), product(xs[0], xs[1], xs[2], xs[3], xs[4])
-            case _:
-                assert False, "too much patterns, maximum possible number is only 4!"
         cnt = 0
         for x in nested_loop1:
             self.state_mapping[x] = cnt

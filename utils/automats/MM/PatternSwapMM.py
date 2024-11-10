@@ -88,17 +88,8 @@ class PatternSwap(MealyMachine):
         xs.append(range(self.n + 1))
         xs.append(range(max([self.sz(k, i=1) for k in range(self.n)])))
 
-        match self.n:
-            case 1:
-                nested_loop1, nested_loop2 = product(xs[0], xs[1], xs[2]), product(
-                    xs[0], xs[1], xs[2]
-                )
-            case 2:
-                nested_loop1, nested_loop2 = product(
-                    xs[0], xs[1], xs[2], xs[3]
-                ), product(xs[0], xs[1], xs[2], xs[3])
-            case _:
-                assert False, "too much patterns, maximum possible is only 2!"
+        nested_loop1, nested_loop2 = product(*xs), product(*xs)
+
         cnt = 0
         for x in nested_loop1:
             self.state_mapping[x] = cnt
