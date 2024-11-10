@@ -9,7 +9,7 @@ class convDFA(DFA):
     """
     Dwa rodzaje konstrukci:
     (1) dane dwa automaty, tworzę ich splot,
-    (2) dany odrazu splot 'jakiś' dwóch automatów.
+    (2) dany odrazu splot 'pewnych' dwóch automatów.
     """
 
     def __init__(self, *args, **kwargs):
