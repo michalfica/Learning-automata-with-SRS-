@@ -22,3 +22,12 @@ class SRSconv(SRS):
             for b in lower_letters:
                 pi.append((a + b, b + a))
         self.pi = pi
+
+    def get_normal_form(self, w):
+        def custom_key(x):
+            if x.isupper():
+                return 0
+            if x.islower():
+                return 1
+
+        return "".join(sorted(w, key=custom_key))

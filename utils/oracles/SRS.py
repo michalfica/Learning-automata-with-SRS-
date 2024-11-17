@@ -19,9 +19,6 @@ class SRS:
         assert check_permissible(pi), "Niedopuszczalny system! Można tylko skracać!"
         self.pi = pi
 
-    """sprawdza czy odpowieć o należenie słowa 'w' do języka można wywnioskować 
-    na podstawie zbioru słów, o krórych już wiem czy należą do języka ('answers')"""
-
     def get_normal_form(self, w):
         normal_form = copy.deepcopy(w)
 
@@ -45,6 +42,9 @@ class SRS:
             if check == False:
                 break
         return normal_form
+
+    """sprawdza czy odpowieć o należenie słowa 'w' do języka można wywnioskować 
+    na podstawie zbioru słów, o krórych już wiem czy należą do języka ('answers')"""
 
     def ask_oracle(self, w, answers):
         nrm_form = self.get_normal_form(w)
