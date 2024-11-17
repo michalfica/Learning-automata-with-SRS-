@@ -38,9 +38,14 @@ class Inferring:
     def run(self, counterexamples=False):
         self._initialization()
 
+        iter_nuber = 0
         while True:
+            iter_nuber += 1
             if self.debug:
-                print(f"S = {sorted(self.S)}, rozmiar E = {sorted(self.E)}")
+                print(f"iteracja nr: {iter_nuber}")
+
+            if self.debug:
+                print(f"S = {len(self.S)}, rozmiar E = {len(self.E)}")
             check, x = self._closed()
             while check == False:
                 self._extend_S(x)
@@ -48,14 +53,14 @@ class Inferring:
 
             if self.debug:
                 print(
-                    f"zamkniętość sprawdzona - S = {sorted(self.S)}, rozmiar E = {sorted(self.E)}"
+                    f"zamkniętość sprawdzona - S = {len(self.S)}, rozmiar E = {len(self.E)}"
                 )
 
             conjecture = self._create_conjecture()
 
             if self.debug:
-                print(f"hipoteza: ")
-                conjecture.print_transitions()
+                print(f"hipoteza: {conjecture.Q}")
+                # conjecture.print_transitions()
 
             if self.check_consistency:
                 assert (
@@ -82,8 +87,8 @@ class Inferring:
 
                     conjecture = self._create_conjecture()
                     if self.debug:
-                        print(f"stworzyłem nową hipoteze:")
-                        conjecture.print_transitions()
+                        print(f"stworzyłem nową hipoteze: {conjecture.Q}")
+                        # conjecture.print_transitions()
                     xs = self._check_consistenticy_with_pi(
                         copy.deepcopy(conjecture), copy.deepcopy(self.oracle)
                     )
