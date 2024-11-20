@@ -22,7 +22,8 @@ class Inferring:
         self.oracle = oracle  # DFA or Mealy machine (for now)
         self.input_signs = self.target.input_signs
         self.output_signs = self.target.output_signs
-        self.S = set()
+        self.S_set = set()
+        self.S = []
         self.E = set()
         self.T = dict()
         self.cnt = [0, 0]
@@ -41,15 +42,14 @@ class Inferring:
         iter_nuber = 0
         while True:
             iter_nuber += 1
-            if self.debug:
-                print(f"iteracja nr: {iter_nuber}")
+            print(f"iteracja nr: {iter_nuber}")
 
             if self.debug:
                 print(f"S = {len(self.S)}, rozmiar E = {len(self.E)}")
-            check, x = self._closed()
+            check, x, last_checked = self._closed(start_index=0)
             while check == False:
                 self._extend_S(x)
-                check, x = self._closed()
+                check, x, last_checked = self._closed(start_index=last_checked)
 
             if self.debug:
                 print(
@@ -60,7 +60,7 @@ class Inferring:
 
             if self.debug:
                 print(f"hipoteza: {conjecture.Q}")
-                # conjecture.print_transitions()
+                conjecture.print_transitions()
 
             if self.check_consistency:
                 assert (
@@ -80,10 +80,10 @@ class Inferring:
                         self.counterexamples.append(x)
                         self._process_counterexample(x)
 
-                    check, x = self._closed()
+                    check, x, last_checked = self._closed(start_index=0)
                     while check == False:
                         self._extend_S(x)
-                        check, x = self._closed()
+                        check, x, last_checked = self._closed(start_index=last_checked)
 
                     conjecture = self._create_conjecture()
                     if self.debug:
@@ -131,26 +131,27 @@ class Inferring:
                 return False
         return True
 
-    def _closed(self):
+    def _closed(self, start_index=0):
         wlist = []
-        for s in self.S:
+        for i in range(start_index, len(self.S)):
+            s = self.S[i]
             for a in self.input_signs:
-                if s + a not in self.S:
-                    wlist.append(s + a)
-        wlist = sorted(wlist, key=len)
+                if s + a not in self.S_set:
+                    wlist.append((s + a, i))
 
-        for w in wlist:
+        for w, i in wlist:
             check = False
             for t in self.S:
                 if self._E_realtion(w, t):
                     check = True
                     break
             if not check:
-                return (False, w)
-        return (True, "")
+                return (False, w, i)
+        return (True, "", len(self.S))
 
     def _extend_S(self, s):
-        self.S.add(s)
+        self.S.append(s)
+        self.S_set.add(s)
         for a in self.input_signs:
             for e in self.E:
                 self.T[(s + a, e)] = self._query_type1(s + a, e)
@@ -164,7 +165,7 @@ class Inferring:
 
             for a in self.input_signs:
                 for e in elist:
-                    if e not in self.E and s + a not in self.S:
+                    if e not in self.E and s + a not in self.S_set:
                         self.T[(s + a, e)] = self._query_type1(s + a, e)
         self.E.update(elist)
 
@@ -172,7 +173,7 @@ class Inferring:
         pass
 
     def _process_counterexample(self, w):
-        states = copy.deepcopy(self.S)
+        states = copy.deepcopy(self.S_set)
         max_pref, idx = "", -1
         for a in w:
             if max_pref + a in states:
