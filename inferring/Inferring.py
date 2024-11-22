@@ -19,13 +19,18 @@ class Inferring:
 
     def __init__(self, target, oracle=None, check_consistency=False, debug=False):
         self.target = target
-        self.oracle = oracle  # DFA or Mealy machine (for now)
+        self.oracle = oracle
         self.input_signs = self.target.input_signs
         self.output_signs = self.target.output_signs
+
         self.S_set = set()
         self.S = []
-        self.E = set()
+
+        self.E_set = set()
+        self.E = []
+
         self.T = dict()
+
         self.cnt = [0, 0]
         self.counterexamples = []
         self.debug = debug
@@ -134,14 +139,14 @@ class Inferring:
     def _closed(self, start_index=0):
         wlist = []
         for i in range(start_index, len(self.S)):
-            s = self.S[i]
+            s = self.S[i][0]
             for a in self.input_signs:
                 if s + a not in self.S_set:
                     wlist.append((s + a, i))
 
         for w, i in wlist:
             check = False
-            for t in self.S:
+            for t, t_binary in self.S:
                 if self._E_realtion(w, t):
                     check = True
                     break
@@ -150,24 +155,30 @@ class Inferring:
         return (True, "", len(self.S))
 
     def _extend_S(self, s):
-        self.S.append(s)
+        self.S.append((s, ""))
         self.S_set.add(s)
         for a in self.input_signs:
             for e in self.E:
-                self.T[(s + a, e)] = self._query_type1(s + a, e)
+                query_result = self._query_type1(s + a, e)
+                self.T[(s + a, e)] = query_result
+                # self.S[-1][1] += str(query_result)
 
     def _extend_E(self, elist):
-        for s in self.S:
+        for i, (s, s_binary) in enumerate(self.S):
 
             for e in elist:
-                if e not in self.E:
-                    self.T[(s, e)] = self._query_type1(s, e)
+                if e not in self.E_set:
+                    query_result = self._query_type1(s, e)
+                    self.T[(s, e)] = query_result
+                    # self.S[i][1] += str(query_result)
 
             for a in self.input_signs:
                 for e in elist:
-                    if e not in self.E and s + a not in self.S_set:
+                    if e not in self.E_set and s + a not in self.S_set:
                         self.T[(s + a, e)] = self._query_type1(s + a, e)
-        self.E.update(elist)
+
+        self.E_set.update(elist)
+        self.E.extend(elist)
 
     def _create_conjecture(self):
         pass

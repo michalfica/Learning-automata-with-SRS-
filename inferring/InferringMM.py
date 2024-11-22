@@ -20,7 +20,7 @@ class InferringMM(Inferring):
 
     def _initialization(self):
         self._extend_E(self.input_signs)
-        for e in self.E:
+        for e in self.E_set:
             self.T[("", e)] = self._query_type1("", e)
         self._extend_S("")
 
@@ -44,14 +44,14 @@ class InferringMM(Inferring):
 
     def _create_conjecture(self):
         def _equivalent_in_S(s):
-            for i, t in enumerate(self.S):
+            for i, (t, t_binary) in enumerate(self.S):
                 if self._E_realtion(s, t):
                     return i
 
         conjecture = MealyMachine(
             Q=len(self.S), input_signs=self.input_signs, output_signs=self.output_signs
         )
-        for i, s in enumerate(self.S):
+        for i, (s, s_binary) in enumerate(self.S):
             for a in self.input_signs:
                 conjecture.λ[(i, a)] = self.T[(s, a)]
                 conjecture.δ[(i, a)] = _equivalent_in_S(s + a)

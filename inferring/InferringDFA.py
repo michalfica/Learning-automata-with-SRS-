@@ -52,12 +52,12 @@ class InferringDFA(Inferring):
 
     def _create_conjecture(self):
         def _equivalent_in_S(s):
-            for i, t in enumerate(self.S):
+            for i, (t, t_binary) in enumerate(self.S):
                 if self._E_realtion(s, t):
                     return i
 
         conjecture = DFA(Q=len(self.S), input_signs=self.input_signs, F=set())
-        for i, s in enumerate(self.S):
+        for i, (s, s_binary) in enumerate(self.S):
             for a in self.input_signs:
                 conjecture.δ[(i, a)] = _equivalent_in_S(s + a)
             if self.T[(s, "")] == DFA.ACCEPT:
