@@ -12,6 +12,7 @@ reload(inferring.Inferring)
 reload(utils.automats.DFA)
 from inferring.Inferring import Inferring
 from utils.automats.DFA.DFA import DFA
+from utils.automats.DFA.convDFA import convDFA
 
 
 class InferringDFA(Inferring):
@@ -50,25 +51,32 @@ class InferringDFA(Inferring):
 
         return ans
 
-    def _create_conjecture(self):
-        binary_rep_of_all_state = dict()
+    def _create_automat(self, type=DFA.SIMPLE_DFA):
+        binary_rep_of_all_states = dict()
         for i, (_, s_binary) in enumerate(self.S):
-            binary_rep_of_all_state[tuple(s_binary)] = i
+            binary_rep_of_all_states[tuple(s_binary)] = i
 
         def _equivalent_in_S(t):
             t_binary = []
             for e in self.E:
                 t_binary.append(self.T[(t, e)])
-            return binary_rep_of_all_state[tuple(t_binary)]
+            return binary_rep_of_all_states[tuple(t_binary)]
 
-            # for i, (t, t_binary) in enumerate(self.S):
-            #     if self._E_realtion(s, t):
-            #         return i
+        if type == DFA.SIMPLE_DFA:
+            conjecture = DFA(Q=len(self.S), input_signs=self.input_signs, F=set())
 
-        conjecture = DFA(Q=len(self.S), input_signs=self.input_signs, F=set())
+        if type == DFA.CONV_DFA:
+            conjecture = convDFA(
+                type="dfa", Q=len(self.S), input_signs=self.input_signs, F=set()
+            )
+
         for i, (s, s_binary) in enumerate(self.S):
             for a in self.input_signs:
                 conjecture.δ[(i, a)] = _equivalent_in_S(s + a)
             if self.T[(s, "")] == DFA.ACCEPT:
                 conjecture.F.add(i)
-        return copy.deepcopy(conjecture)
+        # return copy.deepcopy(conjecture)
+        return conjecture
+
+    def _create_conjecture(self):
+        return copy.deepcopy(self._create_automat())

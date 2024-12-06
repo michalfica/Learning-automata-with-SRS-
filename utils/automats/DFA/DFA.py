@@ -11,6 +11,8 @@ class DFA:
 
     NO_ANSWER = ""
     ACCEPT = 1
+    SIMPLE_DFA = "DFA"
+    CONV_DFA = "convDFA"
 
     def __init__(self, Q, input_signs=[], δ=dict(), F=set()):
         self.Q = Q
