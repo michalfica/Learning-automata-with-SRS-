@@ -26,6 +26,12 @@ class Inferring:
         self.S_set = set()
         self.S = []
 
+        """
+            self.S - list of pairs, i-th element: (s_i, s_i_binary), where 
+                    * s_i        is a string representing i-th state, 
+                    * s_i_binary is a list consisting of zeros and ones and it forms a binary representation of i-th state, based on self.T[(s, e)] 
+        """
+
         self.E_set = set()
         self.E = []
 
@@ -136,49 +142,98 @@ class Inferring:
                 return False
         return True
 
+    # NOTATKO DO _closed():
+
+    #  to chciałbym poprawić
+    # aktualnie sprawdzam po prostu czy jest jakiś stan t in self.S równoważny przejściu w
+    # Robię to tak: iteruję się po wszystkich stanach t in self.S a potem sprawdzam czy w i t są zgodne dla wszytskich słów rozróżiających
+    #
+    # czyli time complexity: |liczba przejść do sprawdzenia| * |self.S| * |self.E| * |zapytanie do słownika|
+    #
+    # JAKA inną metodęużyć zeby usprawnić?
+    # Gdybym miał binarną reprezentacje stanów z self.S i trzymał ją w słowniku,
+    # to zapytanie czy dane przejśćie ma stan równoważny sprawdzałbym w czasie O(1)
+    #
+    # ALE co potrzebuję do tego?
+    # binarną reprezentacje wszystkich stanów
+    #
+    # JAk ją utrzymywac, dla każdego stanu pamiętać liste zero-jedynkową, jego reprezentacje binarną
+    # Jak ją aktualizować? gdy dodaję nowe słowo do zbioru słów testowych self.E to wynik na tym słowie dorzucam tez do reprezentacji binarnej
+    #
+    # a co gdy tworzę nowy stan?
+    # jego reprezentacje odczytam patrząc się na wiersz w tablicy T w czasie |self.E|
+
     def _closed(self, start_index=0):
-        wlist = []
+        transitions = []  # transistions to check
         for i in range(start_index, len(self.S)):
             s = self.S[i][0]
             for a in self.input_signs:
                 if s + a not in self.S_set:
-                    wlist.append((s + a, i))
+                    transitions.append((s + a, i))
 
-        for w, i in wlist:
-            check = False
-            for t, t_binary in self.S:
-                if self._E_realtion(w, t):
-                    check = True
-                    break
-            if not check:
-                return (False, w, i)
+        binary_rep_of_all_states = set()
+        for s in self.S:
+            binary_rep_of_all_states.add(tuple(s[-1]))
+
+        for t, i in transitions:
+            t_binary = []
+            for e in self.E:
+                t_binary.append(self.T[(t, e)])
+
+            if tuple(t_binary) not in binary_rep_of_all_states:
+                return (False, t, i)
+
         return (True, "", len(self.S))
 
+        # --------- old, working version: ---------
+
+        # transition_list = []  # transistions to check
+        # for i in range(start_index, len(self.S)):
+        #     s = self.S[i][0]
+        #     for a in self.input_signs:
+        #         if s + a not in self.S_set:
+        #             transition_list.append((s + a, i))
+
+        # for w, i in transition_list:
+        #     check = False
+        #     for t, t_binary in self.S:
+        #         if self._E_realtion(w, t):
+        #             check = True
+        #             break
+        #     if not check:
+        #         return (False, w, i)
+        # return (True, "", len(self.S))
+
     def _extend_S(self, s):
-        self.S.append((s, ""))
+        s_binary = []
+        for e in self.E:
+            s_binary.append(self.T[(s, e)])
+
+        self.S.append((s, s_binary))
         self.S_set.add(s)
+
         for a in self.input_signs:
             for e in self.E:
                 query_result = self._query_type1(s + a, e)
                 self.T[(s + a, e)] = query_result
-                # self.S[-1][1] += str(query_result)
 
     def _extend_E(self, elist):
-        for i, (s, s_binary) in enumerate(self.S):
+        elist_only_new = [e for e in elist if e not in self.E_set]
 
-            for e in elist:
-                if e not in self.E_set:
-                    query_result = self._query_type1(s, e)
-                    self.T[(s, e)] = query_result
-                    # self.S[i][1] += str(query_result)
+        for s, s_binary in self.S:
+
+            for e in elist_only_new:
+                query_result = self._query_type1(s, e)
+                self.T[(s, e)] = query_result
+                s_binary.append(query_result)
 
             for a in self.input_signs:
-                for e in elist:
-                    if e not in self.E_set and s + a not in self.S_set:
+                for e in elist_only_new:
+                    if s + a not in self.S_set:
                         self.T[(s + a, e)] = self._query_type1(s + a, e)
 
-        self.E_set.update(elist)
-        self.E.extend(elist)
+        self.E_set.update(elist_only_new)
+        self.E.extend(elist_only_new)
 
     def _create_conjecture(self):
         pass
