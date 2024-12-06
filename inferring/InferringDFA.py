@@ -51,10 +51,19 @@ class InferringDFA(Inferring):
         return ans
 
     def _create_conjecture(self):
-        def _equivalent_in_S(s):
-            for i, (t, t_binary) in enumerate(self.S):
-                if self._E_realtion(s, t):
-                    return i
+        binary_rep_of_all_state = dict()
+        for i, (_, s_binary) in enumerate(self.S):
+            binary_rep_of_all_state[tuple(s_binary)] = i
+
+        def _equivalent_in_S(t):
+            t_binary = []
+            for e in self.E:
+                t_binary.append(self.T[(t, e)])
+            return binary_rep_of_all_state[tuple(t_binary)]
+
+            # for i, (t, t_binary) in enumerate(self.S):
+            #     if self._E_realtion(s, t):
+            #         return i
 
         conjecture = DFA(Q=len(self.S), input_signs=self.input_signs, F=set())
         for i, (s, s_binary) in enumerate(self.S):
