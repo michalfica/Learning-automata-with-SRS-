@@ -118,7 +118,8 @@ class Inferring:
                     return (
                         conjecture,
                         self.cnt,
-                        [len(x) for x in self.counterexamples],
+                        # [len(x) for x in self.counterexamples]
+                        [x for x in self.counterexamples],
                     )
                 else:
                     return (conjecture, self.cnt)
