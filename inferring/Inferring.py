@@ -142,27 +142,6 @@ class Inferring:
                 return False
         return True
 
-    # NOTATKO DO _closed():
-
-    #  to chciałbym poprawić
-    # aktualnie sprawdzam po prostu czy jest jakiś stan t in self.S równoważny przejściu w
-    # Robię to tak: iteruję się po wszystkich stanach t in self.S a potem sprawdzam czy w i t są zgodne dla wszytskich słów rozróżiających
-    #
-    # czyli time complexity: |liczba przejść do sprawdzenia| * |self.S| * |self.E| * |zapytanie do słownika|
-    #
-    # JAKA inną metodęużyć zeby usprawnić?
-    # Gdybym miał binarną reprezentacje stanów z self.S i trzymał ją w słowniku,
-    # to zapytanie czy dane przejśćie ma stan równoważny sprawdzałbym w czasie O(1)
-    #
-    # ALE co potrzebuję do tego?
-    # binarną reprezentacje wszystkich stanów
-    #
-    # JAk ją utrzymywac, dla każdego stanu pamiętać liste zero-jedynkową, jego reprezentacje binarną
-    # Jak ją aktualizować? gdy dodaję nowe słowo do zbioru słów testowych self.E to wynik na tym słowie dorzucam tez do reprezentacji binarnej
-    #
-    # a co gdy tworzę nowy stan?
-    # jego reprezentacje odczytam patrząc się na wiersz w tablicy T w czasie |self.E|
-
     def _closed(self, start_index=0):
         transitions = []  # transistions to check
         for i in range(start_index, len(self.S)):
