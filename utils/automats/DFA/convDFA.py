@@ -90,7 +90,7 @@ class convDFA(DFA):
                 return w
 
             for a in alp:
-                u1, u2 = self.δ[(q1, a)], self.δ[(q2, a)]
+                u1, u2 = self.δ[(q1, a)], other.δ[(q2, a)]
                 if (u1, u2) not in visited:
                     s = DFS((u1, u2), w + a)
                     if s != "":
@@ -110,7 +110,7 @@ class convDFA(DFA):
             return (True, "")
         return (False, counterexample[1:])
 
-    def equiv_1(self, other):
+    def equiv_(self, other):
         def BFS():
             visited = dict()
             Q = Queue()
