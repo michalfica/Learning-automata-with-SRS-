@@ -67,7 +67,7 @@ class convDFA(DFA):
         s  -> słowo rozróżniające automaty
     """
 
-    def equiv(self, other):
+    def equiv_dfs(self, other):
         visited = dict()
         alp = []
         alp.extend([a for a in self.input_signs if a.islower()])
@@ -110,7 +110,7 @@ class convDFA(DFA):
             return (True, "")
         return (False, counterexample[1:])
 
-    def equiv_(self, other):
+    def equiv(self, other):
         def BFS():
             visited = dict()
             Q = Queue()
