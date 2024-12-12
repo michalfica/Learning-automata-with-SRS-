@@ -27,6 +27,12 @@ class PatternDFA(DFA):
             Q=compute_number_of_states(), input_signs=input_signs, δ=dict(), F=set()
         )
 
+        assert len(set(patterns)) == len(patterns), "Wszystkie wzorce muszą być różne!"
+        assert (
+            _type == PatternDFA.OR_TYPE_PATTERN_DFA
+            or PatternDFA.EMPTY_STRING not in set(patterns)
+        ), "Nie dpouszczalny pusty string dla PDdfa typu AND!"
+
         patterns.sort(key=lambda s: -len(s))
         if patterns[-1] == PatternDFA.EMPTY_STRING:
             patterns.pop()

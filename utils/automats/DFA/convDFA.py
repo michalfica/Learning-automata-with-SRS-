@@ -73,20 +73,12 @@ class convDFA(DFA):
         alp.extend([a for a in self.input_signs if a.islower()])
         alp.extend([a for a in self.input_signs if a.isupper()])
 
-        print(f"alp = {alp}")
-
         def DFS(state, w):
             visited[state] = True
-
-            print(f"state = {state}, w = {w}")
-
             q1, q2 = state
             if (q1 in self.F and q2 not in other.F) or (
                 q1 not in self.F and q2 in other.F
             ):
-
-                print(f"zwracam kontrprzykład = {w}")
-
                 return w
 
             for a in alp:
@@ -103,9 +95,6 @@ class convDFA(DFA):
                 False
             ), "automaty pracują na różnych alfabetach - nie moga być równoważne!"
         counterexample = DFS((0, 0), "0")
-
-        print(f"kontrprzykład to {counterexample}")
-
         if counterexample == "":
             return (True, "")
         return (False, counterexample[1:])
@@ -137,8 +126,6 @@ class convDFA(DFA):
                 False
             ), "automaty pracują na różnych alfabetach - nie moga być równoważne!"
         counterexample = BFS()
-
-        print(f"zwracam kontrprzykład = {counterexample}")
         if counterexample == "":
             return (True, "")
         return (False, counterexample[1:])

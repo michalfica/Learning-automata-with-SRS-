@@ -16,11 +16,19 @@ from utils.automats.DFA.convDFA import convDFA
 
 
 class InferringDFA(Inferring):
-    def __init__(self, target, oracle=None, check_consistency=False, debug=False):
+    def __init__(
+        self,
+        target,
+        oracle=None,
+        check_consistency=False,
+        equiv_query_fashion="BFS",
+        debug=False,
+    ):
         super().__init__(
             target=target,
             oracle=oracle,
             check_consistency=check_consistency,
+            equiv_query_fashion=equiv_query_fashion,
             debug=debug,
         )
 

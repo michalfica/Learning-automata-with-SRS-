@@ -16,13 +16,22 @@ import copy
 
 class Inferring:
     NO_ANSWER = ""
+    DFS_ADVERSERY_FASHION = "DFS"
+    BFS_FASHION = "BFS"
 
-    def __init__(self, target, oracle=None, check_consistency=False, debug=False):
+    def __init__(
+        self,
+        target,
+        oracle=None,
+        check_consistency=False,
+        equiv_query_fashion=BFS_FASHION,
+        debug=False,
+    ):
         self.target = target
         self.oracle = oracle
         self.input_signs = self.target.input_signs
         self.output_signs = self.target.output_signs
-
+        self.equiv_query_fashion = equiv_query_fashion
         self.S_set = set()
         self.S = []
 
@@ -53,7 +62,7 @@ class Inferring:
         iter_nuber = 0
         while True:
             iter_nuber += 1
-            print(f"iteracja nr: {iter_nuber}")
+            # print(f"iteracja nr: {iter_nuber}")
 
             if self.debug:
                 print(f"S = {len(self.S)}, rozmiar E = {len(self.E)}")
@@ -118,8 +127,8 @@ class Inferring:
                     return (
                         conjecture,
                         self.cnt,
-                        # [len(x) for x in self.counterexamples]
-                        [x for x in self.counterexamples],
+                        [len(x) for x in self.counterexamples],
+                        # [x for x in self.counterexamples],
                     )
                 else:
                     return (conjecture, self.cnt)
@@ -135,6 +144,15 @@ class Inferring:
 
     def _query_type2(self, conjecture):
         self.cnt[1] += 1
+        if self.equiv_query_fashion == Inferring.DFS_ADVERSERY_FASHION:
+
+            attr = getattr(self.target, "equiv_dfs", None)
+            assert callable(
+                attr
+            ), "Nie można zwracać kontrprzykładów w sposób dfs-adwersaryjny (brak metody 'equiv_dfs')."
+
+            return self.target.equiv_dfs(conjecture)
+
         return self.target.equiv(conjecture)
 
     def _E_realtion(self, s, t):

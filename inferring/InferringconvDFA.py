@@ -11,7 +11,14 @@ import copy
 
 
 class InferringconvDFA(InferringDFA):
-    def __init__(self, target, oracle=None, check_consistency=False, debug=False):
+    def __init__(
+        self,
+        target,
+        oracle=None,
+        check_consistency=False,
+        equiv_query_fashion="BFS",
+        debug=False,
+    ):
         if oracle is not None:
             oracle = SRSconv(target.input_signs)
 
@@ -19,6 +26,7 @@ class InferringconvDFA(InferringDFA):
             target=target,
             oracle=oracle,
             check_consistency=check_consistency,
+            equiv_query_fashion=equiv_query_fashion,
             debug=debug,
         )
 

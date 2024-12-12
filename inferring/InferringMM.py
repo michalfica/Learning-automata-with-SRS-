@@ -15,8 +15,13 @@ from utils.automats.MM.MealyMachine import MealyMachine
 
 
 class InferringMM(Inferring):
-    def __init__(self, target, oracle=None, debug=False):
-        super().__init__(target=target, oracle=oracle, debug=debug)
+    def __init__(self, target, oracle=None, equiv_query_fashion="BFS", debug=False):
+        super().__init__(
+            target=target,
+            oracle=oracle,
+            equiv_query_fashion=equiv_query_fashion,
+            debug=debug,
+        )
 
     def _initialization(self):
         self._extend_E(self.input_signs)
