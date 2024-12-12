@@ -2,8 +2,13 @@ from utils.automats.DFA.DFA import DFA
 from itertools import product
 
 
-"""Klasa automatów, akceptująca słowa, w których  występują 
-   WSZYSTKIE wzorce wyspecyfikowane w polu 'patterns'"""
+"""
+Klasa automatów, akceptująca słowa, w których  występują wzorce. Występują 2 typy:
+
+    AND - w słowie muszą występować WSZYSTKIE wzorce wyspecyfikowane w polu 'patterns',
+    OR  - w słowie musi wystąpić CO NAJMNIEJ 1 wzorzec wyspecyfikowany w polu 'patterns' (poza EMPTY_STRING), 
+            dodatkowo jeśli EMPTY_STRING występuje w 'patterns' to do stanów akceptujących należy także stan początkowy.   
+"""
 
 
 class PatternDFA(DFA):
