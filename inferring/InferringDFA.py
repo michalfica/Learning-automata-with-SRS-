@@ -12,7 +12,6 @@ reload(inferring.Inferring)
 reload(utils.automats.DFA)
 from inferring.Inferring import Inferring
 from utils.automats.DFA.DFA import DFA
-from utils.automats.DFA.convDFA import convDFA
 
 
 class InferringDFA(Inferring):
@@ -70,13 +69,7 @@ class InferringDFA(Inferring):
                 t_binary.append(self.T[(t, e)])
             return binary_rep_of_all_states[tuple(t_binary)]
 
-        if type == DFA.SIMPLE_DFA:
-            conjecture = DFA(Q=len(self.S), input_signs=self.input_signs, F=set())
-
-        if type == DFA.CONV_DFA:
-            conjecture = convDFA(
-                type="dfa", Q=len(self.S), input_signs=self.input_signs, F=set()
-            )
+        conjecture = DFA(Q=len(self.S), input_signs=self.input_signs, F=set())
 
         for i, (s, s_binary) in enumerate(self.S):
             for a in self.input_signs:
