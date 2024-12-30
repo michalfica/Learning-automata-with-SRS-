@@ -13,6 +13,8 @@ class DFA:
     NO_ANSWER = ""
     ACCEPT = 1
     SIMPLE_DFA, CONV_DFA = "DFA", "convDFA"
+    AND_TYPE_PATTERN_DFA, OR_TYPE_PATTERN_DFA = "AND", "OR"
+    EMPTY_STRING = ""
 
     def __init__(self, Q=0, input_signs=[], δ=dict(), F=set()):
         self.Q = Q
@@ -40,11 +42,14 @@ class DFA:
                 print(f"({q},{a}) --> {self.δ[(q,a)]}")
         print(f"stany akceptujące - {self.F}")
 
-    def route(self, w):
-        q = 0
+    def route(self, w, q0=0, route_and_return_q=False):
+        q = q0
         for a in w:
             assert (q, a) in self.δ, "nie ma takie przejścia w maszynie!"
             q = self.δ[(q, a)]
+        if route_and_return_q:
+            return q
+
         if q in self.F:
             return (w, 1)
         return (w, 0)
@@ -160,3 +165,90 @@ class DFA:
         self.state_mapping = dict()
         self._compute_state_transitions_for_conv(dfa1, dfa2)
         self.F = set([self.state_mapping[q] for q in product(dfa1.F, dfa2.F)])
+
+    """
+    Funkcja tworząca automat, akceptujący słowa, w których  występują wzorce. Sa 2 możliwe typy:
+        AND - w słowie muszą występować WSZYSTKIE wzorce wyspecyfikowane w polu 'patterns',
+        OR  - w słowie musi wystąpić CO NAJMNIEJ 1 wzorzec wyspecyfikowany w polu 'patterns' (poza EMPTY_STRING), 
+                dodatkowo jeśli EMPTY_STRING występuje w 'patterns' to do stanów akceptujących należy także stan początkowy.   
+    """
+
+    def dreate_pattern_dfa(self, input_signs, patterns, _type=AND_TYPE_PATTERN_DFA):
+        assert len(set(patterns)) == len(patterns), "Wszystkie wzorce muszą być różne!"
+        assert _type == DFA.OR_TYPE_PATTERN_DFA or DFA.EMPTY_STRING not in set(
+            patterns
+        ), "Nie dpouszczalny pusty string dla PDdfa typu AND!"
+
+        def compute_number_of_states():
+            k = 1
+            for x in patterns:
+                k *= len(x) + 1
+            return k
+
+        patterns.sort(key=lambda s: -len(s))
+        if patterns[-1] == DFA.EMPTY_STRING:
+            patterns.pop()
+            self.mark_start_state_as_accepting = True
+        else:
+            self.mark_start_state_as_accepting = False
+
+        self.Q = compute_number_of_states()
+        self.input_signs = input_signs
+        self.patterns = patterns
+        self.n = len(patterns)
+        self.state_mapping = dict()
+        self.type = _type
+
+        self._compute_state_transitions_for_pdfa()
+        self._mark_accepting_states_for_pdfa()
+
+    def _compute_state_transitions_for_pdfa(self):
+        def find_new_state(x, a):
+            words = [self.patterns[i][: x[i]] + a for i in range(self.n)]
+            state = []
+            for i in range(self.n):
+                # szukam max prefiksu słowa self.patterns[i], które jest sufiksem słowa words[i]
+                prefixes = set(
+                    [self.patterns[i][:j] for j in range(len(self.patterns[i]) + 1)]
+                )
+                suffixes = [words[i][j:] for j in range(len(words[i]) + 1)]
+                for s in suffixes:
+                    if s in prefixes:
+                        state.append(len(s) % (len(self.patterns[i]) + 1))
+                        break
+            # korekta, zapamiętuję, że patterns[i] juz wystąpił
+            for i in range(self.n):
+                if x[i] == len(self.patterns[i]):
+                    state[i] = x[i]
+
+            return self.state_mapping[tuple(state)]
+
+        xs = [range(len(x) + 1) for x in self.patterns]
+        nested_loop1, nested_loop2 = product(*xs), product(*xs)
+
+        cnt = 0
+        for x in nested_loop1:
+            self.state_mapping[x] = cnt
+            cnt += 1
+        for x in nested_loop2:
+            for a in self.input_signs:
+                self.δ[(self.state_mapping[x], a)] = find_new_state(x, a)
+
+    def _mark_accepting_states_for_pdfa(self):
+        if self.mark_start_state_as_accepting:
+            start_state = self.state_mapping[tuple([0 for _ in range(self.n)])]
+            self.F.add(start_state)
+
+        if self.type == DFA.AND_TYPE_PATTERN_DFA:
+            state = [len(x) for x in self.patterns]
+            accept_state = self.state_mapping[tuple(state)]
+            self.F.add(accept_state)
+        elif self.type == DFA.OR_TYPE_PATTERN_DFA:
+            xs = [range(len(x) + 1) for x in self.patterns]
+            nested_loop = product(*xs)
+            for state in nested_loop:
+                for i in range(self.n):
+                    if state[i] == len(self.patterns[i]):
+                        self.F.add(self.state_mapping[tuple(state)])
+        else:
+            assert False, "Wrong type of PatternDFA, 'AND' or 'OR' type allowed only!"

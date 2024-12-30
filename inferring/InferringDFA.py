@@ -12,6 +12,7 @@ reload(inferring.Inferring)
 reload(utils.automats.DFA)
 from inferring.Inferring import Inferring
 from utils.automats.DFA.DFA import DFA
+from utils.oracles.SRSconv import SRSconv
 
 
 class InferringDFA(Inferring):
@@ -23,6 +24,9 @@ class InferringDFA(Inferring):
         equiv_query_fashion="BFS",
         debug=False,
     ):
+        if oracle is not None:
+            oracle = SRSconv(target.input_signs)
+
         super().__init__(
             target=target,
             oracle=oracle,
@@ -72,6 +76,7 @@ class InferringDFA(Inferring):
         conjecture = DFA(Q=len(self.S), input_signs=self.input_signs, F=set())
 
         for i, (s, s_binary) in enumerate(self.S):
+            conjecture.mapping[i] = s
             for a in self.input_signs:
                 conjecture.δ[(i, a)] = _equivalent_in_S(s + a)
             if self.T[(s, "")] == DFA.ACCEPT:
