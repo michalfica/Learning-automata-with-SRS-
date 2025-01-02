@@ -17,7 +17,14 @@ class DFA:
     AND_TYPE_PATTERN_DFA, OR_TYPE_PATTERN_DFA = "AND", "OR"
     EMPTY_STRING = ""
 
-    def __init__(self, Q=0, input_signs=[], δ=dict(), F=set(), type_=NOT_DEFINED):
+    def __init__(self, Q=0, input_signs=None, δ=None, F=None, type_=NOT_DEFINED):
+        if input_signs is None:
+            input_signs = []
+        if δ is None:
+            δ = dict()
+        if F is None:
+            F = set()
+
         self.Q = Q
         self.input_signs = input_signs
         self.output_signs = []
@@ -137,16 +144,20 @@ class DFA:
     Funkcja, mając dane dwa automaty, tworzy ich splot.
 
     Konwencja dotycząca alfabetu:
-        * pozdbiór input_signs zawierający tylko MAŁE litery tworzy alfabet jednego automatu (ze splotu),
-        * pozdbiór input_signs zawierający tylko WIELKIE litery tworzy alfabet drugiego automatu (ze splotu).
+        * pozdbiór input_signs zawierający tylko MAŁE litery tworzy alfabet automatu dfa1,
+        * pozdbiór input_signs zawierający tylko WIELKIE litery tworzy alfabet automatu dfa2.
 
     """
 
     def _compute_state_transitions_for_conv(self, dfa1, dfa2):
         def find_new_state(q, a):
             if a.isupper():
+                if a.lower() not in set(dfa2.input_signs):  # add self loop
+                    return self.state_mapping[(q[0], q[1])]
                 return self.state_mapping[(q[0], dfa2.δ[(q[1], a.lower())])]
             else:
+                if a.lower() not in set(dfa1.input_signs):  # add self loop
+                    return self.state_mapping[(q[0], q[1])]
                 return self.state_mapping[(dfa1.δ[(q[0], a)], q[1])]
 
         nested_loop1, nested_loop2 = product(range(dfa1.Q), range(dfa2.Q)), product(
