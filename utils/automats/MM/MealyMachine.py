@@ -13,11 +13,20 @@ class MealyMachine:
     δ                   - funkcja (q,a) -> q'(funkcja przejścia automatu), słownik
     """
 
-    def __init__(self, Q=0, input_signs=None, output_signs=None, λ=dict(), δ=dict()):
+    def __init__(self, Q=0, input_signs=None, output_signs=None, λ=None, δ=None):
+        if input_signs is None:
+            input_signs = []
+        if output_signs is None:
+            output_signs = []
+        if λ is None:
+            λ = dict()
+        if δ is None:
+            δ = dict()
+
         self.Q = Q
         # sortowanie by móc porównywac
-        self.input_signs = sorted(input_signs) if input_signs is not None else None
-        self.output_signs = sorted(output_signs) if output_signs is not None else None
+        self.input_signs = sorted(input_signs)
+        self.output_signs = sorted(output_signs)
         self.λ = λ
         self.δ = δ
 

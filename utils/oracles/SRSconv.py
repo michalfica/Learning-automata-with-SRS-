@@ -13,7 +13,9 @@ from utils.oracles.SRS import SRS
 
 class SRSconv(SRS):
 
-    def __init__(self, alphabet=[]):
+    def __init__(self, alphabet=None):
+        if alphabet is None:
+            alphabet = []
         upper_letters = [a for a in alphabet if a.isupper()]
         lower_letters = [b for b in alphabet if not b.isupper()]
 

@@ -9,7 +9,10 @@ SYSTEM PRZEPISYWANIA SŁÓW"""
 class SRS:
     NO_ANSWER = ""
 
-    def __init__(self, pi=[]):
+    def __init__(self, pi=None):
+        if pi is None:
+            pi = []
+
         def check_permissible(xs):
             for l, r in xs:
                 if len(l) < len(r):
