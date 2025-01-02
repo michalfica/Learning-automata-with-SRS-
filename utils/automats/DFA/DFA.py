@@ -132,7 +132,7 @@ class DFA:
         return (False, counterexample[1:])
 
     """
-    Dane dwa automaty, tworzę ich splot.
+    Funkcja, mając dane dwa automaty, tworzy ich splot.
 
     Konwencja dotycząca alfabetu:
         * pozdbiór input_signs zawierający tylko MAŁE litery tworzy alfabet jednego automatu (ze splotu),
@@ -173,7 +173,7 @@ class DFA:
                 dodatkowo jeśli EMPTY_STRING występuje w 'patterns' to do stanów akceptujących należy także stan początkowy.   
     """
 
-    def dreate_pattern_dfa(self, input_signs, patterns, _type=AND_TYPE_PATTERN_DFA):
+    def create_pattern_dfa(self, input_signs, patterns, _type=AND_TYPE_PATTERN_DFA):
         assert len(set(patterns)) == len(patterns), "Wszystkie wzorce muszą być różne!"
         assert _type == DFA.OR_TYPE_PATTERN_DFA or DFA.EMPTY_STRING not in set(
             patterns
