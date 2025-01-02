@@ -12,16 +12,18 @@ class DFA:
 
     NO_ANSWER = ""
     ACCEPT = 1
-    SIMPLE_DFA, CONV_DFA = "DFA", "convDFA"
+    NOT_DEFINED, SIMPLE_DFA, CONV_DFA = "not defined", "DFA", "convDFA"
+    BITWISE_ADDITION = "bitwise addition"
     AND_TYPE_PATTERN_DFA, OR_TYPE_PATTERN_DFA = "AND", "OR"
     EMPTY_STRING = ""
 
-    def __init__(self, Q=0, input_signs=[], δ=dict(), F=set()):
+    def __init__(self, Q=0, input_signs=[], δ=dict(), F=set(), type_=NOT_DEFINED):
         self.Q = Q
         self.input_signs = input_signs
         self.output_signs = []
         self.δ = δ
         self.F = F
+        self.type = type_
 
         """ mapowanie stanów:
             * dla conv dfa1, dfa2 mapuje krotkę (q1, q2) w stan q, (q1, q2 - to stany odpowiednio w dfa1 i dfa2)"""
@@ -160,6 +162,7 @@ class DFA:
                 self.δ[(self.state_mapping[x], a)] = find_new_state(x, a)
 
     def create_convolution(self, dfa1, dfa2):
+        self.type = DFA.CONV_DFA
         self.Q = dfa1.Q * dfa2.Q
         self.input_signs = dfa1.input_signs + [a.upper() for a in dfa2.input_signs]
         self.state_mapping = dict()
