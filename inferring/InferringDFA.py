@@ -66,7 +66,8 @@ class InferringDFA(Inferring):
 
         return ans
 
-    def _create_automat(self, type=DFA.SIMPLE_DFA):
+    def _create_automat(self, _type=DFA.SIMPLE_DFA):
+
         binary_rep_of_all_states = dict()
         for i, (_, s_binary) in enumerate(self.S):
             binary_rep_of_all_states[tuple(s_binary)] = i
@@ -77,7 +78,7 @@ class InferringDFA(Inferring):
                 t_binary.append(self.T[(t, e)])
             return binary_rep_of_all_states[tuple(t_binary)]
 
-        conjecture = DFA(Q=len(self.S), input_signs=self.input_signs, F=set())
+        conjecture = DFA(Q=len(self.S), input_signs=self.input_signs, type_=_type)
 
         for i, (s, s_binary) in enumerate(self.S):
             conjecture.mapping[i] = s
