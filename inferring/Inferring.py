@@ -12,6 +12,7 @@ reload(utils.automats.MM.MealyMachine)
 reload(utils.automats.DFA.DFA)
 
 import copy
+import BitVector
 
 
 class Inferring:
@@ -38,7 +39,7 @@ class Inferring:
         """
             self.S - list of pairs, i-th element: (s_i, s_i_binary), where 
                     * s_i        is a string representing i-th state, 
-                    * s_i_binary is a list consisting of zeros and ones and it forms a binary representation of i-th state, based on self.T[(s, e)] 
+                    * s_i_binary is a list of 0 and 1, a binary representation of i-th state, based on self.T
         """
 
         self.E_set = set()
@@ -172,12 +173,19 @@ class Inferring:
         binary_rep_of_all_states = set()
         for s in self.S:
             binary_rep_of_all_states.add(tuple(s[-1]))
+            # binary_s = s[-1]
+            # binary_rep_of_all_states.add(str(binary_s))
 
         for t, i in transitions:
-            t_binary = []
+            t_bitlist = []
             for e in self.E:
-                t_binary.append(self.T[(t, e)])
+                t_bitlist.append(self.T[(t, e)])
 
+            # t_binary = BitVector.BitVector(bitlist=t_bitlist)
+            # if str(t_binary) not in binary_rep_of_all_states:
+            #     return (False, t, i)
+
+            t_binary = t_bitlist
             if tuple(t_binary) not in binary_rep_of_all_states:
                 return (False, t, i)
 
@@ -203,11 +211,14 @@ class Inferring:
         # return (True, "", len(self.S))
 
     def _extend_S(self, s):
-        s_binary = []
+        s_bitlist = []
         for e in self.E:
-            s_binary.append(self.T[(s, e)])
+            s_bitlist.append(self.T[(s, e)])
 
-        self.S.append((s, s_binary))
+        # s_binary = BitVector.BitVector(bitlist=s_bitlist)
+        s_binary = s_bitlist
+
+        self.S.append([s, s_binary])
         self.S_set.add(s)
 
         for a in self.input_signs:
@@ -218,11 +229,15 @@ class Inferring:
     def _extend_E(self, elist):
         elist_only_new = [e for e in elist if e not in self.E_set]
 
-        for s, s_binary in self.S:
+        for i, (s, s_binary) in enumerate(self.S):
 
             for e in elist_only_new:
                 query_result = self._query_type1(s, e)
                 self.T[(s, e)] = query_result
+
+                # new_bit = BitVector.BitVector(bitlist=[query_result])
+                # self.S[i][-1] = self.S[i][-1] + new_bit
+
                 s_binary.append(query_result)
 
             for a in self.input_signs:

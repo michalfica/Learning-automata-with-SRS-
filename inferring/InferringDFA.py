@@ -1,5 +1,7 @@
 import sys
 import copy
+import BitVector
+
 from importlib import reload
 
 sys.path.append("../")
@@ -71,16 +73,21 @@ class InferringDFA(Inferring):
         binary_rep_of_all_states = dict()
         for i, (_, s_binary) in enumerate(self.S):
             binary_rep_of_all_states[tuple(s_binary)] = i
+            # binary_rep_of_all_states[str(s_binary)] = i
 
         def _equivalent_in_S(t):
-            t_binary = []
+            t_bitlist = []
             for e in self.E:
-                t_binary.append(self.T[(t, e)])
+                t_bitlist.append(self.T[(t, e)])
+            # t_binary = BitVector.BitVector(bitlist=t_bitlist)
+            # return binary_rep_of_all_states[str(t_binary)]
+
+            t_binary = t_bitlist
             return binary_rep_of_all_states[tuple(t_binary)]
 
         conjecture = DFA(Q=len(self.S), input_signs=self.input_signs, type_=_type)
 
-        for i, (s, s_binary) in enumerate(self.S):
+        for i, (s, _) in enumerate(self.S):
             conjecture.mapping[i] = s
             for a in self.input_signs:
                 conjecture.δ[(i, a)] = _equivalent_in_S(s + a)
