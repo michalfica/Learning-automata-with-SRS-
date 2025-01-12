@@ -11,6 +11,8 @@ import utils.automats.DFA.DFA
 reload(utils.automats.MM.MealyMachine)
 reload(utils.automats.DFA.DFA)
 
+from utils.automats.DFA.DFA import DFA
+
 import copy
 import BitVector
 
@@ -63,7 +65,12 @@ class Inferring:
         iter_nuber = 0
         while True:
             iter_nuber += 1
-            # print(f"iteracja nr: {iter_nuber}")
+
+            # --------------------------------------------------------------- tylko dla czytelności przebiegu testów -----------------------------
+            if self.target.type == DFA.CONV_DFA:
+                print(f"iteracja nr: {iter_nuber}")
+                print(f"S = {len(self.S)}, rozmiar E = {len(self.E)}")
+            # --------------------------------------------------------------- tylko dla czytelności przebiegu testów -----------------------------
 
             if self.debug:
                 print(f"S = {len(self.S)}, rozmiar E = {len(self.E)}")

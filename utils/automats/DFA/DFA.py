@@ -1,5 +1,6 @@
 from queue import Queue
 from itertools import product
+import random
 
 
 class DFA:
@@ -12,8 +13,10 @@ class DFA:
 
     NO_ANSWER = ""
     ACCEPT = 1
-    NOT_DEFINED, SIMPLE_DFA, CONV_DFA = "not defined", "DFA", "convDFA"
-    BITWISE_ADDITION = "bitwise addition"
+    NOT_DEFINED, SIMPLE_DFA = "not_defined", "DFA"
+    RANDOM_DFA = "randomDFA"
+    CONV_DFA = "convDFA"
+    BITWISE_ADDITION = "bitwise_addition"
     AND_TYPE_PATTERN_DFA, OR_TYPE_PATTERN_DFA = "AND", "OR"
     EMPTY_STRING = ""
 
@@ -266,3 +269,17 @@ class DFA:
                         self.F.add(self.state_mapping[tuple(state)])
         else:
             assert False, "Wrong type of PatternDFA, 'AND' or 'OR' type allowed only!"
+
+    def create_random_dfa(self, Q, input_signs):
+        self.Q = Q
+        self.input_signs = input_signs
+        self.type = DFA.RANDOM_DFA
+
+        for q in range(self.Q):
+            for a in self.input_signs:
+                self.δ[(q, a)] = random.randint(0, self.Q - 1)
+        self.F = set(
+            random.choices(
+                population=range(self.Q), k=random.randint(0, (self.Q - 1) // 2)
+            )
+        )
