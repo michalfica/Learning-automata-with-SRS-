@@ -283,9 +283,6 @@ class Inferring:
     def _check_consistenticy_with_pi(self, conjecture, oracle):
         def get_distinction_word(q1, q2):
             for e in self.E:
-                if e == "":
-                    continue
-
                 q1e, q2e = conjecture.route_and_return_q(
                     w=e, q0=q1
                 ), conjecture.route_and_return_q(w=e, q0=q2)

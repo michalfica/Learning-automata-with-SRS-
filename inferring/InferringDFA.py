@@ -16,6 +16,7 @@ from inferring.Inferring import Inferring
 from utils.automats.DFA.DFA import DFA
 from utils.oracles.SRS import SRS
 from utils.oracles.SRSconv import SRSconv
+from utils.oracles.SRSreset import SRSreset
 
 
 class InferringDFA(Inferring):
@@ -31,7 +32,11 @@ class InferringDFA(Inferring):
             if target.type == DFA.CONV_DFA:
                 oracle = SRSconv(target.input_signs)
             if target.type == DFA.BITWISE_ADDITION:
-                oracle = SRS(pi=[(4, 2), (5, 3)])
+                oracle = SRS(pi=[("4", "2"), ("5", "3")])
+            if target.type == DFA.SYNCHRONICITY:
+                oracle = SRSreset(
+                    alphabet=target.input_signs, reset_words=[target.reset_word]
+                )
 
         super().__init__(
             target=target,

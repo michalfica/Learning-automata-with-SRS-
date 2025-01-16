@@ -16,9 +16,11 @@ class DFA:
     NOT_DEFINED, SIMPLE_DFA = "not_defined", "DFA"
     RANDOM_DFA = "randomDFA"
     CONV_DFA = "convDFA"
+    SYNCHRONICITY = "synchronicity"
     BITWISE_ADDITION = "bitwise_addition"
     AND_TYPE_PATTERN_DFA, OR_TYPE_PATTERN_DFA = "AND", "OR"
     EMPTY_STRING = ""
+    NOT_RESETING_WORD = "-1"
 
     def __init__(self, Q=0, input_signs=None, δ=None, F=None, type_=NOT_DEFINED):
         if input_signs is None:
@@ -34,6 +36,7 @@ class DFA:
         self.δ = δ
         self.F = F
         self.type = type_
+        self.reset_word = DFA.NOT_RESETING_WORD
 
         """ mapowanie stanów:
             * dla conv dfa1, dfa2 mapuje krotkę (q1, q2) w stan q, (q1, q2 - to stany odpowiednio w dfa1 i dfa2)"""
@@ -72,6 +75,30 @@ class DFA:
             assert (q, a) in self.δ, "nie ma takie przejścia w maszynie!"
             q = self.δ[(q, a)]
         return q
+
+    def find_accepting_word(self, start_state=0):
+        def BFS():
+            visited = dict()
+            Q = Queue()
+
+            def addToQueue(state, w):
+                if not state in visited:
+                    visited[state] = True
+                    Q.put((state, w))
+
+            addToQueue(start_state, "0")
+            while not Q.empty():
+                q, w = Q.get()
+                if q in self.F:
+                    return w
+                for a in self.input_signs:
+                    addToQueue(self.δ[(q, a)], w + a)
+            return ""
+
+        accepted_word = BFS()
+        if accepted_word == "":
+            return (False, "")
+        return (True, accepted_word[1:])
 
     """
     zwracane wartości:
@@ -275,6 +302,8 @@ class DFA:
         self.input_signs = input_signs
         self.type = DFA.RANDOM_DFA
 
+        self.δ.clear()
+
         for q in range(self.Q):
             for a in self.input_signs:
                 self.δ[(q, a)] = random.randint(0, self.Q - 1)
@@ -283,3 +312,54 @@ class DFA:
                 population=range(self.Q), k=random.randint(0, (self.Q - 1) // 2)
             )
         )
+
+    """
+    Funkcja sprawdzająca czy dany automat ma słowo synchronizujące.
+    """
+
+    def check_synchronicity(self):
+        def create_product_automaton():
+            dfa_ = DFA(Q=self.Q**2, input_signs=self.input_signs)
+
+            states = product(range(self.Q), repeat=2)
+            for i, (q_st, q_nd) in enumerate(states):
+                for a in dfa_.input_signs:
+                    q = (self.δ[(q_st, a)], self.δ[(q_nd, a)])
+                    nxt_state = q[0] * self.Q + q[1]
+                    dfa_.δ[(i, a)] = nxt_state
+            for q in range(self.Q):
+                state = q * self.Q + q
+                dfa_.F.add(state)
+            return dfa_
+
+        def find_reseting_word(q1, q2):
+            q = q1 * self.Q + q2
+            ans, reset_word = product_dfa.find_accepting_word(start_state=q)
+            return reset_word if ans else DFA.NOT_RESETING_WORD
+
+        helpers = dict()
+        product_dfa = create_product_automaton()
+        for q1 in range(self.Q):
+            for q2 in range(q1):
+                w = find_reseting_word(q1, q2)
+                if w != DFA.NOT_RESETING_WORD:
+                    helpers[(q1, q2)] = w
+                    # print(f"helpers({q1}, {q2}) = {w}")
+                else:
+                    return (False, DFA.NOT_RESETING_WORD)
+
+        not_synchronized_states = [q for q in range(self.Q)]
+        reset_word = ""
+        while len(not_synchronized_states) > 1:
+            q1 = not_synchronized_states[-1]
+            q2 = not_synchronized_states[-2]
+            w = helpers[(max(q1, q2), min(q1, q2))]
+
+            reset_word += w
+
+            xs = set()
+            for q in not_synchronized_states:
+                xs.add(self.route_and_return_q(w=w, q0=q))
+            not_synchronized_states = list(xs)
+
+        return (True, reset_word)
