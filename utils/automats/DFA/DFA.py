@@ -17,6 +17,7 @@ class DFA:
     RANDOM_DFA = "randomDFA"
     CONV_DFA = "convDFA"
     SYNCHRONICITY = "synchronicity"
+    MARKEDWORDS = "markedwords"
     BITWISE_ADDITION = "bitwise_addition"
     AND_TYPE_PATTERN_DFA, OR_TYPE_PATTERN_DFA = "AND", "OR"
     EMPTY_STRING = ""
@@ -363,3 +364,43 @@ class DFA:
             not_synchronized_states = list(xs)
 
         return (True, reset_word)
+
+    """
+    Funkcja tworzaca dla danego automatu DFA self, automat dla języka L(self)^M (marked words)
+    """
+
+    def create_marked_words_atomaton(self):
+        dfa_ = DFA(Q=self.Q + 3, input_signs=self.input_signs + ["α", "β"])
+        start_state = 1
+        reject_state = self.Q + 1
+        accept_state = self.Q + 2
+
+        dfa_.δ[(0, "α")] = start_state
+        dfa_.δ[(0, "β")] = reject_state
+        for a in self.input_signs:
+            dfa_.δ[(0, a)] = reject_state
+
+        for (q, a), q_nxt in self.δ.items():
+            dfa_.δ[(q + 1, a)] = q_nxt + 1
+
+        for q in range(self.Q):
+            dfa_.δ[(q + 1, "α")] = reject_state
+            if q in self.F:
+                dfa_.δ[(q + 1, "β")] = accept_state
+            else:
+                dfa_.δ[(q + 1, "β")] = reject_state
+
+        for a in self.input_signs:
+            dfa_.δ[(accept_state, a)] = reject_state
+        dfa_.δ[(accept_state, "α")] = reject_state
+        dfa_.δ[(accept_state, "β")] = reject_state
+
+        for a in self.input_signs:
+            dfa_.δ[(reject_state, a)] = reject_state
+        dfa_.δ[(reject_state, "α")] = reject_state
+        dfa_.δ[(reject_state, "β")] = reject_state
+
+        dfa_.F = set([accept_state])
+        dfa_.type = DFA.MARKEDWORDS
+
+        return dfa_

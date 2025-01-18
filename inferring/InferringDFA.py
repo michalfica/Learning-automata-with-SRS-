@@ -17,6 +17,7 @@ from utils.automats.DFA.DFA import DFA
 from utils.oracles.SRS import SRS
 from utils.oracles.SRSconv import SRSconv
 from utils.oracles.SRSreset import SRSreset
+from utils.oracles.SRSmark import SRSmark
 
 
 class InferringDFA(Inferring):
@@ -37,6 +38,9 @@ class InferringDFA(Inferring):
                 oracle = SRSreset(
                     alphabet=target.input_signs, reset_words=[target.reset_word]
                 )
+            if target.type == DFA.MARKEDWORDS:
+                print(f"uzywam srs dla MARKED DFA!")
+                oracle = SRSmark(alphabet=target.input_signs)
 
         super().__init__(
             target=target,
