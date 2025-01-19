@@ -42,6 +42,7 @@ class DFA:
         """ mapowanie stanów:
             * dla conv dfa1, dfa2 mapuje krotkę (q1, q2) w stan q, (q1, q2 - to stany odpowiednio w dfa1 i dfa2)"""
         self.mapping = dict()
+        self.pruned = False
 
     def __str__(self):
         return f"DFA amount of states = {self.Q}, transitions = {self.δ}, accept states = {self.F}"
@@ -49,12 +50,12 @@ class DFA:
     def print_transitions(self):
         for q in range(self.Q):
             for a in self.input_signs:
-                assert (
-                    q,
-                    a,
-                ) in self.δ, (
-                    "nie ma taiego przejścia w maszynie, potencjalnie zły alfabet!"
-                )
+                if (q, a) not in self.δ:
+                    if self.pruned:
+                        continue
+                    assert (
+                        False
+                    ), "nie ma taiego przejścia w maszynie, potencjalnie zły alfabet!"
                 print(f"({q},{a}) --> {self.δ[(q,a)]}")
         print(f"stany akceptujące - {self.F}")
 
@@ -404,3 +405,18 @@ class DFA:
         dfa_.type = DFA.MARKEDWORDS
 
         return dfa_
+
+    """
+    Usuwa k% krawędzi z funkcji przejścia   
+    """
+
+    def prune(self, k=0.5):
+        edges = []
+        for (q, a), _ in self.δ.items():
+            edges.append((q, a))
+
+        edges_to_delete = random.sample(population=edges, k=int(len(edges) * k))
+        for e in edges_to_delete:
+            self.δ.pop(e, None)
+
+        self.pruned = True
