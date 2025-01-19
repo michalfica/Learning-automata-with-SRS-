@@ -67,9 +67,9 @@ class Inferring:
             iter_nuber += 1
 
             # --------------------------------------------------------------- tylko dla czytelności przebiegu testów -----------------------------
-            if self.target.type == DFA.CONV_DFA:
-                print(f"iteracja nr: {iter_nuber}")
-                print(f"S = {len(self.S)}, rozmiar E = {len(self.E)}")
+            # if self.target.type == DFA.CONV_DFA:
+            #     print(f"iteracja nr: {iter_nuber}")
+            #     print(f"S = {len(self.S)}, rozmiar E = {len(self.E)}")
             # --------------------------------------------------------------- tylko dla czytelności przebiegu testów -----------------------------
 
             if self.debug:
