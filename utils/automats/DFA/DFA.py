@@ -22,6 +22,8 @@ class DFA:
     AND_TYPE_PATTERN_DFA, OR_TYPE_PATTERN_DFA = "AND", "OR"
     EMPTY_STRING = ""
     NOT_RESETING_WORD = "-1"
+    STATE_NOT_ACCESSIBLE = "-1"
+    PARTIAL = "partial"
 
     def __init__(self, Q=0, input_signs=None, δ=None, F=None, type_=NOT_DEFINED):
         if input_signs is None:
@@ -43,6 +45,7 @@ class DFA:
             * dla conv dfa1, dfa2 mapuje krotkę (q1, q2) w stan q, (q1, q2 - to stany odpowiednio w dfa1 i dfa2)"""
         self.mapping = dict()
         self.pruned = False
+        self.selectors = dict()
 
     def __str__(self):
         return f"DFA amount of states = {self.Q}, transitions = {self.δ}, accept states = {self.F}"
@@ -74,9 +77,36 @@ class DFA:
     def route_and_return_q(self, w, q0=0):
         q = q0
         for a in w:
+            if self.pruned and (q, a) not in self.δ:
+                return DFA.STATE_NOT_ACCESSIBLE
+
             assert (q, a) in self.δ, "nie ma takie przejścia w maszynie!"
             q = self.δ[(q, a)]
         return q
+
+    def find_selectors(self):
+        def BFS():
+            visited = dict()
+            Q = Queue()
+            selectors = dict()
+
+            def addToQueue(state, w):
+                if not state in visited:
+                    visited[state] = True
+                    selectors[state] = w[1:]
+                    Q.put((state, w))
+
+            addToQueue(0, "0")
+            while not Q.empty():
+                q, w = Q.get()
+                for a in self.input_signs:
+                    if self.pruned and (q, a) not in self.δ:
+                        continue
+                    else:
+                        addToQueue(self.δ[(q, a)], w + a)
+            return selectors
+
+        return BFS()
 
     def find_accepting_word(self, start_state=0):
         def BFS():
@@ -420,3 +450,22 @@ class DFA:
             self.δ.pop(e, None)
 
         self.pruned = True
+
+    def create_coppy_with_start_sign(self):
+        dfa_ = DFA(Q=self.Q + 2, input_signs=self.input_signs + ["α"])
+        start_state = 1
+        reject_state = dfa_.Q - 1
+
+        dfa_.δ[(0, "α")] = start_state
+        for a in self.input_signs:
+            dfa_.δ[(0, a)] = reject_state
+        for a in dfa_.input_signs:
+            dfa_.δ[(reject_state, a)] = reject_state
+
+        for (q, a), q_nxt in self.δ.items():
+            dfa_.δ[(q + 1, a)] = q_nxt + 1
+        for q in range(self.Q):
+            dfa_.δ[(q + 1, "α")] = reject_state
+        dfa_.F = set([q + 1 for q in self.F])
+        dfa_.type = DFA.PARTIAL
+        return dfa_

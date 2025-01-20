@@ -18,6 +18,7 @@ from utils.oracles.SRS import SRS
 from utils.oracles.SRSconv import SRSconv
 from utils.oracles.SRSreset import SRSreset
 from utils.oracles.SRSmark import SRSmark
+from utils.oracles.SRSpartial import SRSpartial
 
 
 class InferringDFA(Inferring):
@@ -30,6 +31,9 @@ class InferringDFA(Inferring):
         debug=False,
     ):
         if oracle is not None:
+            # print(
+            #     f"wybieram system doradzczy (typ oracle)! target_type = {target.type}"
+            # )
             if target.type == DFA.CONV_DFA:
                 oracle = SRSconv(target.input_signs)
             if target.type == DFA.BITWISE_ADDITION:
@@ -39,8 +43,11 @@ class InferringDFA(Inferring):
                     alphabet=target.input_signs, reset_words=[target.reset_word]
                 )
             if target.type == DFA.MARKEDWORDS:
-                print(f"uzywam srs dla MARKED DFA!")
+                # print(f"uzywam srs dla MARKED DFA!")
                 oracle = SRSmark(alphabet=target.input_signs)
+            if target.type == DFA.PARTIAL:
+                # print(f"uzywam srs na podstawie partial dfa!")
+                oracle = SRSpartial(alphabet=oracle.input_signs, partial_dfa=oracle)
 
         super().__init__(
             target=target,
