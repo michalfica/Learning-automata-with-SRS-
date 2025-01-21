@@ -24,6 +24,7 @@ class DFA:
     NOT_RESETING_WORD = "-1"
     STATE_NOT_ACCESSIBLE = "-1"
     PARTIAL = "partial"
+    INDEMPOTENT = "idempotent"
 
     def __init__(self, Q=0, input_signs=None, δ=None, F=None, type_=NOT_DEFINED):
         if input_signs is None:
@@ -40,7 +41,6 @@ class DFA:
         self.F = F
         self.type = type_
         self.reset_word = DFA.NOT_RESETING_WORD
-
         """ mapowanie stanów:
             * dla conv dfa1, dfa2 mapuje krotkę (q1, q2) w stan q, (q1, q2 - to stany odpowiednio w dfa1 i dfa2)"""
         self.mapping = dict()
@@ -85,6 +85,7 @@ class DFA:
         return q
 
     def find_selectors(self):
+
         def BFS():
             visited = dict()
             Q = Queue()
@@ -109,6 +110,7 @@ class DFA:
         return BFS()
 
     def find_accepting_word(self, start_state=0):
+
         def BFS():
             visited = dict()
             Q = Queue()
@@ -140,6 +142,7 @@ class DFA:
     """
 
     def equiv(self, other):
+
         def BFS():
             visited = dict()
             Q = Queue()
@@ -212,6 +215,7 @@ class DFA:
     """
 
     def _compute_state_transitions_for_conv(self, dfa1, dfa2):
+
         def find_new_state(q, a):
             if a.isupper():
                 if a.lower() not in set(dfa2.input_signs):  # add self loop
@@ -279,6 +283,7 @@ class DFA:
         self._mark_accepting_states_for_pdfa()
 
     def _compute_state_transitions_for_pdfa(self):
+
         def find_new_state(x, a):
             words = [self.patterns[i][: x[i]] + a for i in range(self.n)]
             state = []
@@ -335,6 +340,7 @@ class DFA:
         self.type = DFA.RANDOM_DFA
 
         self.δ.clear()
+        self.F.clear()
 
         for q in range(self.Q):
             for a in self.input_signs:
@@ -350,6 +356,7 @@ class DFA:
     """
 
     def check_synchronicity(self):
+
         def create_product_automaton():
             dfa_ = DFA(Q=self.Q**2, input_signs=self.input_signs)
 
@@ -469,3 +476,31 @@ class DFA:
         dfa_.F = set([q + 1 for q in self.F])
         dfa_.type = DFA.PARTIAL
         return dfa_
+
+    """
+    Zwraca losowy automat, który jest indempotentny ze wzgledu na przejscia po znaku 'letter' 
+    """
+
+    def create_random_indempotent_automaton(self, Q, input_signs, letter="a"):
+        self.create_random_dfa(Q=Q, input_signs=input_signs)
+        self.type = DFA.INDEMPOTENT
+        states = [q for q in range(self.Q)]
+        random.shuffle(states)
+
+        while len(states) > 0:
+            q1 = states.pop()
+            q2 = states.pop() if len(states) > 0 else q1
+
+            self.δ[(q1, letter)] = q2
+            self.δ[(q2, letter)] = q2
+
+    """
+    Sprawdza czy dany automat jest indempotentny ze wzgledu na znak 'letter'
+    """
+
+    def check_if_idempotent(self, letter="a"):
+        for q1 in range(self.Q):
+            q2 = self.δ[(q1, letter)]
+            if self.δ[(q2, letter)] != q2:
+                return False
+        return True
