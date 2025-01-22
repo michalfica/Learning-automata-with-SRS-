@@ -15,10 +15,12 @@ from utils.automats.MM.MealyMachine import MealyMachine
 
 
 class InferringMM(Inferring):
-    def __init__(self, target, oracle=None, equiv_query_fashion="BFS", debug=False):
+    def __init__(
+        self, target, advice_system=None, equiv_query_fashion="BFS", debug=False
+    ):
         super().__init__(
             target=target,
-            oracle=oracle,
+            advice_system=advice_system,
             equiv_query_fashion=equiv_query_fashion,
             debug=debug,
         )
@@ -31,9 +33,9 @@ class InferringMM(Inferring):
 
     def _query_type1(self, s, e):
         w = s + e
-        if self.oracle is not None:
+        if self.advice_system is not None:
 
-            ans = self.queries[w] if w in self.queries else self._ask_oracle(w)
+            ans = self.queries[w] if w in self.queries else self._ask_advice_system(w)
 
             if ans != self.NO_ANSWER and ans == self.target.route(w)[1]:
                 self.queries[w] = ans
@@ -41,7 +43,7 @@ class InferringMM(Inferring):
 
         if w not in self.queries:
             self.cnt[0] += 1
-            if self.debug and self.oracle is not None:
+            if self.debug and self.advice_system is not None:
                 print(f"zapytanie o słowo {w}")
             self.queries[w] = self.target.route(w)[1]
 

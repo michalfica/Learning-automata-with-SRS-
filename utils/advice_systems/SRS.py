@@ -49,7 +49,7 @@ class SRS:
     """sprawdza czy odpowieć o należenie słowa 'w' do języka można wywnioskować 
     na podstawie zbioru słów, o krórych już wiem czy należą do języka ('answers')"""
 
-    def ask_oracle(self, w, answers):
+    def ask_advice_system(self, w, answers):
         nrm_form = self.get_normal_form(w)
         if nrm_form in answers:
             return answers[nrm_form]

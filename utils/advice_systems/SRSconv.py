@@ -1,10 +1,10 @@
-# from oracle1 import Oracle1
+# from advice_system1 import advice_system1
 from importlib import reload
-import utils.oracles.SRS as SRS
+import utils.advice_systems.SRS as SRS
 
 reload(SRS)
 
-from utils.oracles.SRS import SRS
+from utils.advice_systems.SRS import SRS
 
 """klasa implementująca więzy:
  SYSTEM PRZEPISYWANIA SŁÓW, reguła: ZAMIEŃ SĄSIEDNIE LITERY, ale

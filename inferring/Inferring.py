@@ -25,13 +25,13 @@ class Inferring:
     def __init__(
         self,
         target,
-        oracle=None,
+        advice_system=None,
         check_consistency=False,
         equiv_query_fashion=BFS_FASHION,
         debug=False,
     ):
         self.target = target
-        self.oracle = oracle
+        self.advice_system = advice_system
         self.input_signs = self.target.input_signs
         self.output_signs = self.target.output_signs
         self.equiv_query_fashion = equiv_query_fashion
@@ -92,17 +92,17 @@ class Inferring:
 
             if self.check_consistency:
                 assert (
-                    self.oracle is not None
+                    self.advice_system is not None
                 ), "Nie można sprawdzać zgodności z więzami gdy nie ma więzów!"
 
                 if self.debug:
                     print("sprawdzam ZGODNOŚĆ z więzami")
 
                 xs = self._check_consistenticy_with_pi(
-                    copy.deepcopy(conjecture), copy.deepcopy(self.oracle)
+                    copy.deepcopy(conjecture), copy.deepcopy(self.advice_system)
                 )
                 if self.debug:
-                    print(f"z niezgodnośći wynikaja takie kontrprzykłady: {xs}")
+                    print(f"z niezgodności wynikaja takie kontrprzykłady: {xs}")
                 while len(xs) > 0:
                     for x in xs:
                         self.counterexamples.append(x)
@@ -116,9 +116,8 @@ class Inferring:
                     conjecture = self._create_conjecture()
                     if self.debug:
                         print(f"stworzyłem nową hipoteze: {conjecture.Q}")
-                        # conjecture.print_transitions()
                     xs = self._check_consistenticy_with_pi(
-                        copy.deepcopy(conjecture), copy.deepcopy(self.oracle)
+                        copy.deepcopy(conjecture), copy.deepcopy(self.advice_system)
                     )
                     if self.debug:
                         print(f"z niezgodnośći wynikaja takie kontrprzykłady: {xs}")
@@ -144,8 +143,8 @@ class Inferring:
             if self.debug:
                 print("\n\n")
 
-    def _ask_oracle(self, w):
-        return self.oracle.route(w)[1]
+    def _ask_advice_system(self, w):
+        return self.advice_system.route(w)[1]
 
     def _query_type1(self, s, e):
         pass
@@ -198,25 +197,6 @@ class Inferring:
 
         return (True, "", len(self.S))
 
-        # --------- old, working version: ---------
-
-        # transition_list = []  # transistions to check
-        # for i in range(start_index, len(self.S)):
-        #     s = self.S[i][0]
-        #     for a in self.input_signs:
-        #         if s + a not in self.S_set:
-        #             transition_list.append((s + a, i))
-
-        # for w, i in transition_list:
-        #     check = False
-        #     for t, t_binary in self.S:
-        #         if self._E_realtion(w, t):
-        #             check = True
-        #             break
-        #     if not check:
-        #         return (False, w, i)
-        # return (True, "", len(self.S))
-
     def _extend_S(self, s):
         s_bitlist = []
         for e in self.E:
@@ -268,11 +248,11 @@ class Inferring:
             else:
                 break
 
-        max_pref += w[idx + 1]  # dokładam jedną literkę
+        max_pref += w[idx + 1]  # add one letter
         idx += 1
 
-        w = w[idx + 1 :]  # zostawiam sobie sufiks
-        w = w[::-1]  # odwracam go
+        w = w[idx + 1 :]  # left the suffix
+        w = w[::-1]  # reverse it
 
         suffixes, suffix = [], ""
         for a in w:
@@ -280,7 +260,7 @@ class Inferring:
             suffixes.append(suffix)
         self._extend_E(suffixes)
 
-    def _check_consistenticy_with_pi(self, conjecture, oracle):
+    def _check_consistenticy_with_pi(self, conjecture, advice_system):
         def get_distinction_word(q1, q2):
             for e in self.E:
                 q1e, q2e = conjecture.route_and_return_q(
@@ -296,7 +276,7 @@ class Inferring:
 
         counterexamples = set()
         for q in range(conjecture.Q):
-            for l, r in oracle.pi:
+            for l, r in advice_system.pi:
                 q1, q2 = conjecture.route_and_return_q(
                     w=l, q0=q
                 ), conjecture.route_and_return_q(w=r, q0=q)

@@ -14,48 +14,44 @@ reload(inferring.Inferring)
 reload(utils.automats.DFA)
 from inferring.Inferring import Inferring
 from utils.automats.DFA.DFA import DFA
-from utils.oracles.SRS import SRS
-from utils.oracles.SRSconv import SRSconv
-from utils.oracles.SRSreset import SRSreset
-from utils.oracles.SRSmark import SRSmark
-from utils.oracles.SRSpartial import SRSpartial
-from utils.oracles.SRSindemp import SRSindemp
+from utils.advice_systems.SRS import SRS
+from utils.advice_systems.SRSconv import SRSconv
+from utils.advice_systems.SRSreset import SRSreset
+from utils.advice_systems.SRSmark import SRSmark
+from utils.advice_systems.SRSpartial import SRSpartial
+from utils.advice_systems.SRSindemp import SRSindemp
 
 
 class InferringDFA(Inferring):
     def __init__(
         self,
         target,
-        oracle=None,
+        advice_system=None,
         check_consistency=False,
         equiv_query_fashion="BFS",
         debug=False,
     ):
-        if oracle is not None:
-            print(
-                f"wybieram system doradzczy (typ oracle)! target_type = {target.type}"
-            )
+        if advice_system is not None:
             if target.type == DFA.CONV_DFA:
-                oracle = SRSconv(target.input_signs)
+                advice_system = SRSconv(target.input_signs)
             if target.type == DFA.BITWISE_ADDITION:
-                oracle = SRS(pi=[("4", "2"), ("5", "3")])
+                advice_system = SRS(pi=[("4", "2"), ("5", "3")])
             if target.type == DFA.SYNCHRONICITY:
-                oracle = SRSreset(
+                advice_system = SRSreset(
                     alphabet=target.input_signs, reset_words=[target.reset_word]
                 )
             if target.type == DFA.MARKEDWORDS:
-                # print(f"uzywam srs dla MARKED DFA!")
-                oracle = SRSmark(alphabet=target.input_signs)
+                advice_system = SRSmark(alphabet=target.input_signs)
             if target.type == DFA.PARTIAL:
-                # print(f"uzywam srs na podstawie partial dfa!")
-                oracle = SRSpartial(alphabet=oracle.input_signs, partial_dfa=oracle)
+                advice_system = SRSpartial(
+                    alphabet=advice_system.input_signs, partial_dfa=advice_system
+                )
             if target.type == DFA.INDEMPOTENT:
-                print(f"uzywam srs z regułką: aa -> a ")
-                oracle = SRSindemp(letter="a")
+                advice_system = SRSindemp(letter="a")
 
         super().__init__(
             target=target,
-            oracle=oracle,
+            advice_system=advice_system,
             check_consistency=check_consistency,
             equiv_query_fashion=equiv_query_fashion,
             debug=debug,
@@ -73,17 +69,17 @@ class InferringDFA(Inferring):
         if w in self.queries:
             return self.queries[w]
 
-        if self.oracle is not None:
-            ans = self.oracle.ask_oracle(w, self.queries)
-            if ans != self.oracle.NO_ANSWER:
+        if self.advice_system is not None:
+            ans = self.advice_system.ask_advice_system(w, self.queries)
+            if ans != self.advice_system.NO_ANSWER:
                 return ans
 
         self.cnt[0] += 1
         ans = self.target.route(w)[1]
         self.queries[w] = ans
 
-        if self.oracle is not None:
-            w_norm = self.oracle.get_normal_form(w)
+        if self.advice_system is not None:
+            w_norm = self.advice_system.get_normal_form(w)
             self.queries[w_norm] = ans
 
         return ans
