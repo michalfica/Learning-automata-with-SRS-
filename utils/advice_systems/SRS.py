@@ -2,9 +2,6 @@ from queue import Queue
 import copy
 import re
 
-"""klasa implementująca więzy:
-SYSTEM PRZEPISYWANIA SŁÓW"""
-
 
 class SRS:
     NO_ANSWER = ""
@@ -19,7 +16,7 @@ class SRS:
                     return False
             return True
 
-        assert check_permissible(pi), "Niedopuszczalny system! Można tylko skracać!"
+        assert check_permissible(pi), "Such SRS not permitted!"
         self.pi = pi
 
     def get_normal_form(self, w):
@@ -30,7 +27,7 @@ class SRS:
             for l, r in self.pi:
                 find_all = [
                     i.start() for i in re.finditer("(?=" + l + ")", normal_form)
-                ]  # wszytskie wystapienia l w słowie w
+                ]
 
                 if len(find_all) == 0:
                     continue
@@ -45,9 +42,6 @@ class SRS:
             if check == False:
                 break
         return normal_form
-
-    """sprawdza czy odpowieć o należenie słowa 'w' do języka można wywnioskować 
-    na podstawie zbioru słów, o krórych już wiem czy należą do języka ('answers')"""
 
     def ask_advice_system(self, w, answers):
         nrm_form = self.get_normal_form(w)

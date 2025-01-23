@@ -7,10 +7,10 @@ import subprocess
 
 class DFA:
     """
-    Q                   - liczba stanów maszyny,
-    input_signs         - alfabet wejściowy,
-    δ                   - funkcja (q,a) -> q'(funkcja przejścia automatu), słownik
-    F                   - zbiór stanów akceptujących
+    Q                   - number of states,
+    input_signs         - input alphabet,
+    δ                   - transitions function (q,a) -> q'
+    F                   - set of accepting states
     """
 
     NO_ANSWER = ""
@@ -43,8 +43,7 @@ class DFA:
         self.F = F
         self.type = type_
         self.reset_word = DFA.NOT_RESETING_WORD
-        """ mapowanie stanów:
-            * dla conv dfa1, dfa2 mapuje krotkę (q1, q2) w stan q, (q1, q2 - to stany odpowiednio w dfa1 i dfa2)"""
+
         self.mapping = dict()
         self.pruned = False
         self.selectors = dict()
@@ -58,16 +57,14 @@ class DFA:
                 if (q, a) not in self.δ:
                     if self.pruned:
                         continue
-                    assert (
-                        False
-                    ), "nie ma taiego przejścia w maszynie, potencjalnie zły alfabet!"
+                    assert False, "There is no such trasition in automaton!"
                 print(f"({q},{a}) --> {self.δ[(q,a)]}")
         print(f"stany akceptujące - {self.F}")
 
     def route(self, w, q0=0, route_and_return_q=False):
         q = q0
         for a in w:
-            assert (q, a) in self.δ, "nie ma takie przejścia w maszynie!"
+            assert (q, a) in self.δ, "There is no such trasition in automaton!"
             q = self.δ[(q, a)]
         if route_and_return_q:
             return q
@@ -82,7 +79,7 @@ class DFA:
             if self.pruned and (q, a) not in self.δ:
                 return DFA.STATE_NOT_ACCESSIBLE
 
-            assert (q, a) in self.δ, "nie ma takie przejścia w maszynie!"
+            assert (q, a) in self.δ, "There is no such trasition in automaton!"
             q = self.δ[(q, a)]
         return q
 
@@ -137,10 +134,10 @@ class DFA:
         return (True, accepted_word[1:])
 
     """
-    zwracane wartości:
-        1  -> różne alfabety obu maszyn 
-        "" -> maszyny równoważne 
-        s  -> słowo rozróżniające automaty 
+    Retuened values:
+        when automatons have different alphabets: 1 
+        when automatons are equivalent: ""
+        other wise : a counter example 
     """
 
     def equiv(self, other):
@@ -167,9 +164,7 @@ class DFA:
             return ""
 
         if not self.input_signs == other.input_signs:
-            assert (
-                False
-            ), "automaty pracują na różnych alfabetach - nie moga być równoważne!"
+            assert False, "Different alphabets!"
         counterexample = BFS()
         if counterexample == "":
             return (True, "")
@@ -199,20 +194,18 @@ class DFA:
             return ""
 
         if not self.input_signs == other.input_signs:
-            assert (
-                False
-            ), "automaty pracują na różnych alfabetach - nie moga być równoważne!"
+            assert False, "Different alphabets!"
         counterexample = DFS((0, 0), "0")
         if counterexample == "":
             return (True, "")
         return (False, counterexample[1:])
 
     """
-    Funkcja, mając dane dwa automaty, tworzy ich splot.
+    The function is given two automata and creates their convolution.
 
-    Konwencja dotycząca alfabetu:
-        * pozdbiór input_signs zawierający tylko MAŁE litery tworzy alfabet automatu dfa1,
-        * pozdbiór input_signs zawierający tylko WIELKIE litery tworzy alfabet automatu dfa2.
+        Alphabet designation convention:
+            * subset of input_signs consisting of only LOWER letters create the alphabet of the dfa1 machine,
+            * subset of input_signs consisting of only UPPERCASE letters form the alphabet of the dfa2 machine.
 
     """
 
@@ -249,17 +242,17 @@ class DFA:
         self.F = set([self.state_mapping[q] for q in product(dfa1.F, dfa2.F)])
 
     """
-    Funkcja tworząca automat, akceptujący słowa, w których  występują wzorce. Sa 2 możliwe typy:
-        AND - w słowie muszą występować WSZYSTKIE wzorce wyspecyfikowane w polu 'patterns',
-        OR  - w słowie musi wystąpić CO NAJMNIEJ 1 wzorzec wyspecyfikowany w polu 'patterns' (poza EMPTY_STRING), 
-                dodatkowo jeśli EMPTY_STRING występuje w 'patterns' to do stanów akceptujących należy także stan początkowy.   
+    A function that creates an automaton that accepts words containing patterns. There are 2 possible types:
+        AND - ALL patterns specified in the 'patterns' field must appear in the word,
+        OR - the word must contain AT LEAST 1 pattern specified in the 'patterns' field (except EMPTY_STRING), 
+                additionally, if EMPTY_STRING appears in 'patterns', the initial state also includes the accepting states. 
     """
 
     def create_pattern_dfa(self, input_signs, patterns, _type=AND_TYPE_PATTERN_DFA):
-        assert len(set(patterns)) == len(patterns), "Wszystkie wzorce muszą być różne!"
+        assert len(set(patterns)) == len(patterns), "All patterns must be different!"
         assert _type == DFA.OR_TYPE_PATTERN_DFA or DFA.EMPTY_STRING not in set(
             patterns
-        ), "Nie dpouszczalny pusty string dla PDdfa typu AND!"
+        ), "Empty string not permitted for PDdfa type AND!"
 
         def compute_number_of_states():
             k = 1
@@ -290,7 +283,6 @@ class DFA:
             words = [self.patterns[i][: x[i]] + a for i in range(self.n)]
             state = []
             for i in range(self.n):
-                # szukam max prefiksu słowa self.patterns[i], które jest sufiksem słowa words[i]
                 prefixes = set(
                     [self.patterns[i][:j] for j in range(len(self.patterns[i]) + 1)]
                 )
@@ -299,7 +291,6 @@ class DFA:
                     if s in prefixes:
                         state.append(len(s) % (len(self.patterns[i]) + 1))
                         break
-            # korekta, zapamiętuję, że patterns[i] juz wystąpił
             for i in range(self.n):
                 if x[i] == len(self.patterns[i]):
                     state[i] = x[i]
@@ -354,7 +345,7 @@ class DFA:
         )
 
     """
-    Funkcja sprawdzająca czy dany automat ma słowo synchronizujące.
+    A function that checks whether a given machine has a synchronization word.
     """
 
     def check_synchronicity(self):
@@ -385,7 +376,6 @@ class DFA:
                 w = find_reseting_word(q1, q2)
                 if w != DFA.NOT_RESETING_WORD:
                     helpers[(q1, q2)] = w
-                    # print(f"helpers({q1}, {q2}) = {w}")
                 else:
                     return (False, DFA.NOT_RESETING_WORD)
 
@@ -469,11 +459,10 @@ class DFA:
                 sync_word = "".join([self.input_signs[int(a)] for a in w])
                 break
 
-        # print(f"zwracam: {sync_word}")
         return sync_word
 
     """
-    Funkcja tworzaca dla danego automatu DFA self, automat dla języka L(self)^M (marked words)
+    A function that creates DFA self for a given machine, an machine for the language L(self)^M (marked words)
     """
 
     def create_marked_words_atomaton(self):
@@ -513,7 +502,7 @@ class DFA:
         return dfa_
 
     """
-    Usuwa k% krawędzi z funkcji przejścia   
+    Deletes almost all edges from transition function besides a random k edges (k in [k1, k2])
     """
 
     def prune(self, k1=10, k2=10):
@@ -548,7 +537,7 @@ class DFA:
         return dfa_
 
     """
-    Zwraca losowy automat, który jest indempotentny ze wzgledu na przejscia po znaku 'letter' 
+    Returns a random automaton that is indempotent due to transitions after the 'letter' character
     """
 
     def create_random_indempotent_automaton(self, Q, input_signs, letter="a"):
@@ -565,7 +554,7 @@ class DFA:
             self.δ[(q2, letter)] = q2
 
     """
-    Sprawdza czy dany automat jest indempotentny ze wzgledu na znak 'letter'
+    Checks whether a given machine is indempotent due to the 'letter' character
     """
 
     def check_if_idempotent(self, letter="a"):

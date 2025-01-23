@@ -14,7 +14,6 @@ reload(utils.automats.DFA.DFA)
 from utils.automats.DFA.DFA import DFA
 
 import copy
-import BitVector
 
 
 class Inferring:
@@ -66,43 +65,33 @@ class Inferring:
         while True:
             iter_nuber += 1
 
-            # --------------------------------------------------------------- tylko dla czytelności przebiegu testów -----------------------------
-            # if self.target.type == DFA.CONV_DFA:
-            #     print(f"iteracja nr: {iter_nuber}")
-            #     print(f"S = {len(self.S)}, rozmiar E = {len(self.E)}")
-            # --------------------------------------------------------------- tylko dla czytelności przebiegu testów -----------------------------
-
             if self.debug:
-                print(f"S = {len(self.S)}, rozmiar E = {len(self.E)}")
+                print(f"S = {len(self.S)}, E = {len(self.E)}")
             check, x, last_checked = self._closed(start_index=0)
             while check == False:
                 self._extend_S(x)
                 check, x, last_checked = self._closed(start_index=last_checked)
 
             if self.debug:
-                print(
-                    f"zamkniętość sprawdzona - S = {len(self.S)}, rozmiar E = {len(self.E)}"
-                )
+                print(f"closed checked - S = {len(self.S)}, E = {len(self.E)}")
 
             conjecture = self._create_conjecture()
 
             if self.debug:
-                print(f"hipoteza: {conjecture.Q}")
+                print(f"candidate automaton: {conjecture.Q}")
                 conjecture.print_transitions()
 
             if self.check_consistency:
-                assert (
-                    self.advice_system is not None
-                ), "Nie można sprawdzać zgodności z więzami gdy nie ma więzów!"
+                assert self.advice_system is not None, "There must be a some SRS!"
 
                 if self.debug:
-                    print("sprawdzam ZGODNOŚĆ z więzami")
+                    print("stat ckecing consistency with srs")
 
                 xs = self._check_consistenticy_with_pi(
                     copy.deepcopy(conjecture), copy.deepcopy(self.advice_system)
                 )
                 if self.debug:
-                    print(f"z niezgodności wynikaja takie kontrprzykłady: {xs}")
+                    print(f"not consistent, caunterexpls: {xs}")
                 while len(xs) > 0:
                     for x in xs:
                         self.counterexamples.append(x)
@@ -115,18 +104,18 @@ class Inferring:
 
                     conjecture = self._create_conjecture()
                     if self.debug:
-                        print(f"stworzyłem nową hipoteze: {conjecture.Q}")
+                        print(f"new candidate created: {conjecture.Q}")
                     xs = self._check_consistenticy_with_pi(
                         copy.deepcopy(conjecture), copy.deepcopy(self.advice_system)
                     )
                     if self.debug:
-                        print(f"z niezgodnośći wynikaja takie kontrprzykłady: {xs}")
+                        print(f"not consistent, caunterexpls: {xs}")
 
             check, x = self._query_type2(conjecture)
 
             if check == False:
                 if self.debug:
-                    print(f"kontrprzyklad (z zapytania o równoważność)= {x}")
+                    print(f"counterexamples (from EQ)= {x}")
                 self.counterexamples.append(x)
                 self._process_counterexample(x)
             else:
@@ -135,7 +124,6 @@ class Inferring:
                         conjecture,
                         self.cnt,
                         [len(x) for x in self.counterexamples],
-                        # [x for x in self.counterexamples],
                     )
                 else:
                     return (conjecture, self.cnt)
@@ -154,9 +142,7 @@ class Inferring:
         if self.equiv_query_fashion == Inferring.DFS_ADVERSERY_FASHION:
 
             attr = getattr(self.target, "equiv_dfs", None)
-            assert callable(
-                attr
-            ), "Nie można zwracać kontrprzykładów w sposób dfs-adwersaryjny (brak metody 'equiv_dfs')."
+            assert callable(attr), "Lack of equiv_dfs'"
 
             return self.target.equiv_dfs(conjecture)
 
@@ -179,17 +165,11 @@ class Inferring:
         binary_rep_of_all_states = set()
         for s in self.S:
             binary_rep_of_all_states.add(tuple(s[-1]))
-            # binary_s = s[-1]
-            # binary_rep_of_all_states.add(str(binary_s))
 
         for t, i in transitions:
             t_bitlist = []
             for e in self.E:
                 t_bitlist.append(self.T[(t, e)])
-
-            # t_binary = BitVector.BitVector(bitlist=t_bitlist)
-            # if str(t_binary) not in binary_rep_of_all_states:
-            #     return (False, t, i)
 
             t_binary = t_bitlist
             if tuple(t_binary) not in binary_rep_of_all_states:
@@ -202,7 +182,6 @@ class Inferring:
         for e in self.E:
             s_bitlist.append(self.T[(s, e)])
 
-        # s_binary = BitVector.BitVector(bitlist=s_bitlist)
         s_binary = s_bitlist
 
         self.S.append([s, s_binary])
@@ -222,9 +201,6 @@ class Inferring:
                 query_result = self._query_type1(s, e)
                 self.T[(s, e)] = query_result
 
-                # new_bit = BitVector.BitVector(bitlist=[query_result])
-                # self.S[i][-1] = self.S[i][-1] + new_bit
-
                 s_binary.append(query_result)
 
             for a in self.input_signs:
@@ -241,6 +217,7 @@ class Inferring:
     def _process_counterexample(self, w):
         states = copy.deepcopy(self.S_set)
         max_pref, idx = "", -1
+        assert w not in states, "String w can not be a counterexample!"
         for a in w:
             if max_pref + a in states:
                 max_pref += a

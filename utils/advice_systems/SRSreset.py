@@ -6,9 +6,6 @@ reload(SRS)
 
 from utils.advice_systems.SRS import SRS
 
-"""klasa implementująca więzy:
- SYSTEM PRZEPISYWANIA SŁÓW, reguła: wszystko co przed słowem resetującym nieważne"""
-
 
 class SRSreset(SRS):
 

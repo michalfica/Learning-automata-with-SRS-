@@ -6,10 +6,6 @@ reload(SRS)
 
 from utils.advice_systems.SRS import SRS
 
-"""klasa implementująca więzy:
- SYSTEM PRZEPISYWANIA SŁÓW, reguła: ZAMIEŃ SĄSIEDNIE LITERY, ale
- zamienia tylko litery z 'różnych' alfabetów """
-
 
 class SRSconv(SRS):
 
