@@ -338,11 +338,15 @@ class DFA:
         for q in range(self.Q):
             for a in self.input_signs:
                 self.δ[(q, a)] = random.randint(0, self.Q - 1)
-        self.F = set(
-            random.choices(
-                population=range(self.Q), k=random.randint(0, (self.Q - 1) // 2)
-            )
-        )
+        # self.F = set(
+        #     random.choices(
+        #         population=range(self.Q), k=random.randint(0, (self.Q - 1) // 2)
+        #     )
+        # )
+        accetp_state_rate = 0.1
+        for q in range(self.Q):
+            if random.random() <= accetp_state_rate:
+                self.F.add(q)
 
     """
     A function that checks whether a given machine has a synchronization word.
