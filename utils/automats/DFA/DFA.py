@@ -2,9 +2,11 @@ from queue import Queue
 from itertools import product
 import random
 
+import subprocess
+
 
 class DFA:
-    """konwencja:
+    """
     Q                   - liczba stanów maszyny,
     input_signs         - alfabet wejściowy,
     δ                   - funkcja (q,a) -> q'(funkcja przejścia automatu), słownik
@@ -404,6 +406,73 @@ class DFA:
         return (True, reset_word)
 
     """
+    Heuristic to find short sync word
+    """
+
+    def find_sync_word_heuristic(self):
+        synchronized, w = set([random.randint(0, self.Q - 1)]), ""
+        while len(synchronized) < self.Q and len(w) < 35:
+            largest_set = set()
+            best_a = ""
+            for a in self.input_signs:
+                counterimage = set()
+                for q in range(self.Q):
+                    if self.δ[(q, a)] in synchronized:
+                        counterimage.add(q)
+                if len(counterimage) > len(largest_set):
+                    largest_set = counterimage
+                    best_a = a
+            synchronized = largest_set
+            w += best_a
+
+        if len(synchronized) == self.Q:
+            return (True, w[::-1])
+        return (False, DFA.NOT_RESETING_WORD)
+
+    def convert_tozyzik_format(self):
+        dfa_format = ""
+        dfa_format += str(len(self.input_signs)) + " " + str(self.Q) + "\n"
+        for q in range(self.Q):
+            for a in self.input_signs:
+                dfa_format += str(self.δ[(q, a)]) + " "
+        return dfa_format
+
+    def find_minim_synch_word(self):
+        dfa_format = self.convert_tozyzik_format()
+        f = open("../synchrowords-main/data/dfa_format.txt", mode="w")
+        f.write(dfa_format)
+        f.close()
+
+        with open("output.txt", "w") as outfile:
+            subprocess.run(
+                [
+                    "../synchrowords-main/synchro",
+                    "--config",
+                    "../synchrowords-main/configs/readme_config.json",
+                    "--file",
+                    "../synchrowords-main/data/dfa_format.txt",
+                    "-o",
+                    "save.txt",
+                ],
+                stdout=outfile,
+            )
+
+        f = open("../synchrowords-main/save.txt")
+        sync_word = DFA.NOT_RESETING_WORD
+        for line in f:
+            line = line.strip()
+            s, e = line.find("{"), line.find("}")
+
+            if s != -1:
+                w = line[s + 1 : e]
+                w = "".join(w.split())
+                sync_word = "".join([self.input_signs[int(a)] for a in w])
+                break
+
+        # print(f"zwracam: {sync_word}")
+        return sync_word
+
+    """
     Funkcja tworzaca dla danego automatu DFA self, automat dla języka L(self)^M (marked words)
     """
 
@@ -447,12 +516,13 @@ class DFA:
     Usuwa k% krawędzi z funkcji przejścia   
     """
 
-    def prune(self, k=0.5):
+    def prune(self, k1=10, k2=10):
         edges = []
         for (q, a), _ in self.δ.items():
             edges.append((q, a))
 
-        edges_to_delete = random.sample(population=edges, k=int(len(edges) * k))
+        k = random.randint(k1, k2)
+        edges_to_delete = random.sample(population=edges, k=max(1, int(len(edges) - k)))
         for e in edges_to_delete:
             self.δ.pop(e, None)
 
