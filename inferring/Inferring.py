@@ -58,7 +58,7 @@ class Inferring:
     def _initialization(self):
         pass
 
-    def run(self, counterexamples=False):
+    def run(self, counterexamples=False, return_srs_size=False):
         self._initialization()
 
         iter_nuber = 0
@@ -249,7 +249,7 @@ class Inferring:
                 ):
                     return copy.deepcopy(e)
 
-            assert False, "Nie powiodło się szukanie słowa rozróżniającego!"
+            assert False, "Failed!"
 
         counterexamples = set()
         for q in range(conjecture.Q):

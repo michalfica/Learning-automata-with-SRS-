@@ -59,7 +59,7 @@ class DFA:
                         continue
                     assert False, "There is no such trasition in automaton!"
                 print(f"({q},{a}) --> {self.δ[(q,a)]}")
-        print(f"stany akceptujące - {self.F}")
+        print(f"Accepting states - {self.F}")
 
     def route(self, w, q0=0, route_and_return_q=False):
         q = q0
@@ -446,7 +446,7 @@ class DFA:
                     "--file",
                     "../synchrowords-main/data/dfa_format.txt",
                     "-o",
-                    "save.txt",
+                    "../synchrowords-main/test_alghoritm/save.txt",
                 ],
                 stdout=outfile,
             )

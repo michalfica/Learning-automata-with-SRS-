@@ -44,7 +44,7 @@ class InferringMM(Inferring):
         if w not in self.queries:
             self.cnt[0] += 1
             if self.debug and self.advice_system is not None:
-                print(f"zapytanie o słowo {w}")
+                print(f"word -  {w}")
             self.queries[w] = self.target.route(w)[1]
 
         return self.queries[w][-len(e) :]
