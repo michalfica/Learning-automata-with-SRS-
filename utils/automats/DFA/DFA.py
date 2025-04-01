@@ -1,6 +1,7 @@
 from queue import Queue
 from itertools import product
 import random
+import string
 
 import subprocess
 
@@ -53,13 +54,69 @@ class DFA:
 
     def print_transitions(self):
         for q in range(self.Q):
+            from_q = str(q) + ": \n"
             for a in self.input_signs:
                 if (q, a) not in self.δ:
                     if self.pruned:
                         continue
-                    assert False, "There is no such trasition in automaton!"
-                print(f"({q},{a}) --> {self.δ[(q,a)]}")
+                    # TO DO: nie jestem pewny czy ten assert jest dobrze napisany !
+                    assert False, f"There is no such ({q}, {a}) trasition in automaton!"
+                # print(f"({q},{a}) --> {self.δ[(q,a)]}")
+                from_q += a + " " + str(self.δ[(q, a)]) + "; "
+            print(from_q)
+
+    def print_dfa(self):
+        print(f"alphabet: {self.input_signs}")
+        print(f"transitions: ")
+        self.print_transitions()
         print(f"Accepting states - {self.F}")
+
+    def print_java_format(self):
+        result = (
+            "Alphabet<Character> sigma = Alphabets.characters('a', '"
+            + string.ascii_lowercase[len(self.input_signs) - 1]
+            + "');\n"
+        )
+        result += "AutomatonBuilders.newDFA(sigma)\n"
+        result += ' .withInitial("q0")\n'
+        for q in range(self.Q):
+            result += ' .from("q' + str(q) + '")\n'
+            for i, a in enumerate(self.input_signs):
+                if (q, a) not in self.δ:
+                    if self.pruned:
+                        continue
+                    # TO DO: nie jestem pewny czy ten assert jest dobrze napisany !
+                    assert False, f"There is no such ({q}, {a}) trasition in automaton!"
+                result += (
+                    "     .on('"
+                    + string.ascii_lowercase[i]
+                    + "').to(\"q"
+                    + str(self.δ[(q, a)])
+                    + '")\n'
+                )
+        accept_states = ", ".join(['"q' + str(q) + '"' for q in list(self.F)])
+        result += " .withAccepting(" + accept_states + ")\n"
+        result += " .create();"
+        return result
+
+    """ 
+    returns string - complete descreption of dfa in the following format:
+
+    n - number of states, m - size of alphabet 
+    transitions 
+    accepting states 
+    """
+
+    def print_complete_description(self):
+        s = ""
+        s += str(self.Q) + " " + str(len(self.input_signs)) + "\n"
+        for q in range(self.Q):
+            for a in self.input_signs:
+                s += str(self.δ[(q, a)]) + " "
+            s += "\n"
+        for q in list(self.F):
+            s += str(q) + " "
+        return s
 
     def route(self, w, q0=0, route_and_return_q=False):
         q = q0
