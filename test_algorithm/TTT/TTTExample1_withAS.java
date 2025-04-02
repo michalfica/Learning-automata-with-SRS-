@@ -1,12 +1,9 @@
-/* 
- * Directory in learnlib repo:
- * examples/src/main/java/de/learnlib/example/TTTExample1_withAS.java
- */
 package de.learnlib.example;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
@@ -35,8 +32,7 @@ import net.automatalib.word.Word;
 import net.automatalib.word.WordBuilder;
 
 public class TTTExample1_withAS {
-    private static final String DFA_DESCRIPTION_FILE = "../../learnlib/examples/src/main/java/de/learnlib/example/DfaMedium.txt";//"src/main/java/de/learnlib/example/DfaSmall.txt";  
-    private static final String EXP_STATISTIC = "src/main/java/de/learnlib/example/expStatistic.txt";
+    private static final String DFA_DESCRIPTION_FILE = "../../learnlib/examples/src/main/java/de/learnlib/example/DfaEx4.txt";
 
     private static final char[] engAlphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
@@ -55,7 +51,12 @@ public class TTTExample1_withAS {
     // Find a distinguishing word for two DFA states
     private static Word<Character> findDistinguishingWord(TTTHypothesisDFA<Character> dfa, Alphabet<Character> alphabet, TTTStateDFA<Character> q1, TTTStateDFA<Character> q2) {
         Queue<String> queue = new LinkedList<>();
+        queue.clear();
         queue.add("");
+
+        HashSet<String> visited = new HashSet<>();
+        visited.clear();
+        visited.add(q1.toString()+"#"+q2.toString());
 
         while (!queue.isEmpty()) {
             String w = queue.poll();
@@ -66,7 +67,13 @@ public class TTTExample1_withAS {
             }
 
             for (Character symbol : alphabet) {
-                queue.add(w + symbol);
+                String next_q1 = dfa.getSuccessor(q1, convertStringToWord(w+symbol)).toString();
+                String next_q2 = dfa.getSuccessor(q2, convertStringToWord(w+symbol)).toString();
+
+                if( !visited.contains(next_q1 + "#" + next_q2)){
+                    queue.add(w + symbol);
+                    visited.add(next_q1 + "#" + next_q2);
+                }
             }
         }
         return null; // No distinguishing word found

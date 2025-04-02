@@ -1,8 +1,3 @@
-/* 
- * Directory in learnlib repo:
- * examples/src/main/java/de/learnlib/example/TTTExample1_withAS.java
- */
-
 package de.learnlib.example;
 
 import java.io.File;
@@ -31,7 +26,7 @@ import net.automatalib.util.automaton.builder.AutomatonBuilders;
 import net.automatalib.util.automaton.equivalence.DeterministicEquivalenceTest;
 
 public class TTTExample1 {
-    private static final String DFA_DESCRIPTION_FILE = "../../learnlib/examples/src/main/java/de/learnlib/example/DfaMedium.txt";//"src/main/java/de/learnlib/example/DfaSmall.txt";  
+    private static final String DFA_DESCRIPTION_FILE = "../../learnlib/examples/src/main/java/de/learnlib/example/DfaEx4.txt"; 
     private static final String EXP_STATISTIC = "src/main/java/de/learnlib/example/expStatistic.txt";
 
     private static final char[] engAlphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
