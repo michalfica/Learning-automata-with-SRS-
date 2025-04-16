@@ -2,7 +2,6 @@ package de.learnlib.example;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -26,8 +25,7 @@ import net.automatalib.util.automaton.builder.AutomatonBuilders;
 import net.automatalib.util.automaton.equivalence.DeterministicEquivalenceTest;
 
 public class TTTExample1 {
-    private static final String DFA_DESCRIPTION_FILE = "../../learnlib/examples/src/main/java/de/learnlib/example/DfaEx4.txt"; 
-    private static final String EXP_STATISTIC = "src/main/java/de/learnlib/example/expStatistic.txt";
+    private static final String DFA_DESCRIPTION_FILE = "../../learnlib/examples/src/main/java/de/learnlib/example/DfaEx.txt"; 
 
     private static final char[] engAlphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
@@ -36,9 +34,11 @@ public class TTTExample1 {
 
 
     public static void main(String[] args) throws IOException{
-        
         // load DFA and alphabet
         CompactDFA<Character> target = constructSUL();
+
+        // DFALearningExample<Integer> target = DFABenchmarks.loadPeterson2();
+
         Alphabet<Character> sigma = target.getInputAlphabet();
 
         // construct a simulator membership query oracle
@@ -64,15 +64,11 @@ public class TTTExample1 {
         // turn on time profiling
         experiment.setProfile(true);
 
-        // enable logging of models
-        experiment.setLogModels(true);
-        
-
         // run experiment
-        long startTime = System.nanoTime();
+        // long startTime = System.nanoTime();
         experiment.run();
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime);
+        // long endTime = System.nanoTime();
+        // long duration = (endTime - startTime);
 
         // get the result
         final DFA<?, Character> result = experiment.getFinalHypothesis();
@@ -88,11 +84,11 @@ public class TTTExample1 {
         System.out.println(experiment.getRounds().getSummary());
         System.out.println(mqOracle.getStatisticalData().getSummary());
 
-        try (FileWriter expStatistic = new FileWriter(EXP_STATISTIC)) {
-            expStatistic.write(experiment.getRounds().getSummary()+"\n");
-            expStatistic.write(mqOracle.getStatisticalData().getSummary()+"\n");
-            expStatistic.write("duration: " + (float)duration/1000000000 + "\n");
-        }
+        // try (FileWriter expStatistic = new FileWriter(EXP_STATISTIC)) {
+        //     expStatistic.write(experiment.getRounds().getSummary()+"\n");
+        //     expStatistic.write(mqOracle.getStatisticalData().getSummary()+"\n");
+        //     expStatistic.write("duration: " + (float)duration/1000000000 + "\n");
+        // }
         System.out.println("-------------------------------------------------------");
     }
 

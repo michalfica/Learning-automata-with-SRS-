@@ -32,7 +32,7 @@ import net.automatalib.word.Word;
 import net.automatalib.word.WordBuilder;
 
 public class TTTExample1_withAS {
-    private static final String DFA_DESCRIPTION_FILE = "../../learnlib/examples/src/main/java/de/learnlib/example/DfaEx4.txt";
+    private static final String DFA_DESCRIPTION_FILE = "../../learnlib/examples/src/main/java/de/learnlib/example/DfaEx.txt";
 
     private static final char[] engAlphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
@@ -118,9 +118,9 @@ public class TTTExample1_withAS {
         learningAlgorithm.startLearning();
 
         while (true) {
-            System.out.print("Starting round: ");
-            System.out.print(rounds.getCount());
-            System.out.print("\n");
+            // System.out.print("Starting round: ");
+            // System.out.print(rounds.getCount());
+            // System.out.print("\n");
 
             TTTHypothesisDFA<Character> hyp = (TTTHypothesisDFA<Character>) learningAlgorithm.getHypothesisModel();
 
