@@ -19,6 +19,7 @@ class DFA:
     NOT_DEFINED, SIMPLE_DFA = "not_defined", "DFA"
     RANDOM_DFA = "randomDFA"
     CONV_DFA = "convDFA"
+    CONV_DFA_WITH_COMMON = "convDFAwithCommon"
     SYNCHRONICITY = "synchronicity"
     MARKEDWORDS = "markedwords"
     BITWISE_ADDITION = "bitwise_addition"
@@ -39,6 +40,8 @@ class DFA:
 
         self.Q = Q
         self.input_signs = input_signs
+        self.common_letters = None
+
         self.output_signs = []
         self.δ = δ
         self.F = F
@@ -296,6 +299,49 @@ class DFA:
         self.input_signs = dfa1.input_signs + [a.upper() for a in dfa2.input_signs]
         self.state_mapping = dict()
         self._compute_state_transitions_for_conv(dfa1, dfa2)
+        self.F = set([self.state_mapping[q] for q in product(dfa1.F, dfa2.F)])
+
+    """
+    The function is given two automata and creates their convolution BUT WITH COMMON LETTERS! 
+    """
+
+    def _compute_state_transitions_for_conv_with_common_letters(
+        self, dfa1, dfa2, common_letters
+    ):
+        def find_new_state(q, a):
+            if a in set(common_letters):
+                return self.state_mapping[(dfa1.δ[(q[0], a)], dfa2.δ[(q[1], a)])]
+            else:
+                if a in set(dfa1.input_signs):
+                    return self.state_mapping[(dfa1.δ[(q[0], a)], q[1])]
+                else:
+                    return self.state_mapping[(q[0], dfa2.δ[(q[1], a)])]
+
+        nested_loop1, nested_loop2 = product(range(dfa1.Q), range(dfa2.Q)), product(
+            range(dfa1.Q), range(dfa2.Q)
+        )
+
+        cnt = 0
+        for x in nested_loop1:
+            self.state_mapping[x] = cnt
+            cnt += 1
+        for x in nested_loop2:
+            for a in self.input_signs:
+                self.δ[(self.state_mapping[x], a)] = find_new_state(x, a)
+
+    def create_convolution_with_common_letters(self, dfa1, dfa2):
+        self.type = DFA.CONV_DFA_WITH_COMMON
+        self.Q = dfa1.Q * dfa2.Q
+
+        self.common_letters = list(
+            set(dfa1.input_signs).intersection(set(dfa2.input_signs))
+        )
+        self.input_signs = list(set(dfa1.input_signs).union(set(dfa2.input_signs)))
+
+        self.state_mapping = dict()
+        self._compute_state_transitions_for_conv_with_common_letters(
+            dfa1, dfa2, self.common_letters
+        )
         self.F = set([self.state_mapping[q] for q in product(dfa1.F, dfa2.F)])
 
     """

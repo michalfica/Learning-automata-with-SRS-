@@ -65,6 +65,8 @@ class Inferring:
         while True:
             iter_nuber += 1
 
+            # print(f"iter nr = {iter_nuber}")
+
             if self.debug:
                 print(f"S = {len(self.S)}, E = {len(self.E)}")
             check, x, last_checked = self._closed(start_index=0)
