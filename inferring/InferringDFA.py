@@ -16,6 +16,7 @@ from inferring.Inferring import Inferring
 from utils.automats.DFA.DFA import DFA
 from utils.advice_systems.SRS import SRS
 from utils.advice_systems.SRSconv import SRSconv
+from utils.advice_systems.SRSconv_with_common import SRSconv_with_common
 from utils.advice_systems.SRSreset import SRSreset
 from utils.advice_systems.SRSmark import SRSmark
 from utils.advice_systems.SRSpartial import SRSpartial
@@ -23,6 +24,7 @@ from utils.advice_systems.SRSindemp import SRSindemp
 
 
 class InferringDFA(Inferring):
+
     def __init__(
         self,
         target,
@@ -32,6 +34,10 @@ class InferringDFA(Inferring):
         debug=False,
     ):
         if advice_system is not None:
+            if target.type == DFA.CONV_DFA_WITH_COMMON:
+                advice_system = SRSconv_with_common(
+                    target.input_signs, common_letters=target.common_letters
+                )
             if target.type == DFA.CONV_DFA:
                 advice_system = SRSconv(target.input_signs)
             if target.type == DFA.BITWISE_ADDITION:

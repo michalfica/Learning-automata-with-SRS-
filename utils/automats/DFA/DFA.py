@@ -308,6 +308,7 @@ class DFA:
     def _compute_state_transitions_for_conv_with_common_letters(
         self, dfa1, dfa2, common_letters
     ):
+
         def find_new_state(q, a):
             if a in set(common_letters):
                 return self.state_mapping[(dfa1.δ[(q[0], a)], dfa2.δ[(q[1], a)])]
@@ -332,11 +333,16 @@ class DFA:
     def create_convolution_with_common_letters(self, dfa1, dfa2):
         self.type = DFA.CONV_DFA_WITH_COMMON
         self.Q = dfa1.Q * dfa2.Q
-
-        self.common_letters = list(
-            set(dfa1.input_signs).intersection(set(dfa2.input_signs))
-        )
-        self.input_signs = list(set(dfa1.input_signs).union(set(dfa2.input_signs)))
+        """
+        Kolejnosć liter na liście jest bardzo istotna POLEGA NA TYM SRS !!! 
+        """
+        self.common_letters = [
+            a for a in dfa1.input_signs if a in set(dfa2.input_signs)
+        ]
+        self.input_signs = [a for a in dfa1.input_signs]
+        for a in dfa2.input_signs:
+            if a not in set(self.input_signs):
+                self.input_signs.append(a)
 
         self.state_mapping = dict()
         self._compute_state_transitions_for_conv_with_common_letters(
