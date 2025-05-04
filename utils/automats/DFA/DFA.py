@@ -42,6 +42,8 @@ class DFA:
         self.input_signs = input_signs
         self.common_letters = None
 
+        self.indempotent_letter = None
+
         self.output_signs = []
         self.δ = δ
         self.F = F
@@ -112,7 +114,17 @@ class DFA:
 
     def print_complete_description(self):
         s = ""
-        s += str(self.Q) + " " + str(len(self.input_signs)) + "\n"
+        s += str(self.Q) + " " + str(len(self.input_signs))
+        if self.type == DFA.CONV_DFA_WITH_COMMON:
+            s += " " + str((len(self.input_signs) - len(self.common_letters)) // 2)
+            s += " " + str(
+                (len(self.input_signs) - len(self.common_letters)) // 2
+                + len(self.common_letters)
+                - 1
+            )
+        if self.type == DFA.INDEMPOTENT:
+            s += " " + str(self.input_signs.index(self.indempotent_letter))
+        s += "\n"
         for q in range(self.Q):
             for a in self.input_signs:
                 s += str(self.δ[(q, a)]) + " "
@@ -654,8 +666,11 @@ class DFA:
     """
 
     def create_random_indempotent_automaton(self, Q, input_signs, letter="a"):
+        assert letter in set(input_signs), "Letter must be in input_signs!"
+
         self.create_random_dfa(Q=Q, input_signs=input_signs)
         self.type = DFA.INDEMPOTENT
+        self.indempotent_letter = letter
         states = [q for q in range(self.Q)]
         random.shuffle(states)
 
