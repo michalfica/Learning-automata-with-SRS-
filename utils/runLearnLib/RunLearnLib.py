@@ -1,3 +1,5 @@
+import subprocess
+
 """
 Class that is used to communicate with LearnLib repository.
 Allows to:
@@ -5,8 +7,6 @@ Allows to:
     * run LearnLib implementation of L* or TTT algorithm,
     * returns the result of execution of the above algorithms and handles possible errors.
 """
-
-import subprocess
 
 
 class RunLearnLib:
@@ -30,23 +30,22 @@ class RunLearnLib:
     # * uruchomienie liku z Learnliba i zwrócenie wyniku
     def compileLearnLib(self):
         proc = subprocess.run(
-            [
-                "cd ../../../learnlib/examples ; mvn clean install; cd ../../magisterka/test_algorithm/Lstar"
-            ],
+            ["cd ../../../learnlib/examples ; mvn clean install"],
             shell=True,
             capture_output=True,
             text=True,
         )
 
-        assert proc.returncode == 0, (
-            "Error during execution of subprocess.run"
-            # + "\nstout: " + proc.stdout
-            + "\nstderr: "
-            + proc.stderr
-        )
-
         proc_output = proc.stdout
-        compErr = proc_output.find(self.COMPILATION_ERR)
-        assert compErr == -1, "Compilation error during 'mvn clean install'"
-
-        return True
+        if proc.returncode != 0:
+            compErr = proc_output.find(self.COMPILATION_ERR)
+            if compErr != -1:
+                assert False, "Compilation error during 'mvn clean install'"
+            else:
+                assert False, (
+                    "Error during execution of subprocess.run"
+                    + "\nstout: "
+                    + proc.stdout
+                    + "\nstderr: "
+                    + proc.stderr
+                )
