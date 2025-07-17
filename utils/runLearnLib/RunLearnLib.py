@@ -11,8 +11,10 @@ import subprocess
 
 class RunLearnLib:
 
-    def __init__(self):
-        pass
+    COMPILATION_ERR = "[ERROR] COMPILATION ERROR :"
+
+    def __init__(self, debug=False):
+        self.debug = debug
 
     """
     TO DO: 
@@ -22,7 +24,7 @@ class RunLearnLib:
     """
 
     def compileLearnLib(self):
-        _ = subprocess.run(
+        proc = subprocess.run(
             [
                 "cd ../../../learnlib/examples ; mvn clean install; cd ../../magisterka/test_algorithm/Lstar"
             ],
@@ -30,3 +32,16 @@ class RunLearnLib:
             capture_output=True,
             text=True,
         )
+
+        assert proc.returncode == 0, (
+            "Error during execution of subprocess.run"
+            # + "\nstout: " + proc.stdout
+            + "\nstderr: "
+            + proc.stderr
+        )
+
+        proc_output = proc.stdout
+        compErr = proc_output.find(self.COMPILATION_ERR)
+        assert compErr == -1, "Compilation error during 'mvn clean install'"
+
+        return True
