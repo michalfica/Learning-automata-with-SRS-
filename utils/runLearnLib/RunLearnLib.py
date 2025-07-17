@@ -23,6 +23,11 @@ class RunLearnLib:
         * Czy to dobra ścieżka do uruchomienia?
     """
 
+    # WĄTPLIWOŚĆI:
+    #  * czy komenda jest poprawna, czy powinienem zmieniać ścieżkę?
+
+    # TO DO:
+    # * uruchomienie liku z Learnliba i zwrócenie wyniku
     def compileLearnLib(self):
         proc = subprocess.run(
             [
